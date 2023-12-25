@@ -132,7 +132,7 @@ const Home: NextPage = () => {
           </div>
         </a>
         <span>
-          <a href="https://patreon.com/t3dotgg">🐦 Chirp Blue</a>
+          <a href="https://patreon.com/t3dotgg">🐦 Clubadvisor Blue</a>
         </span>
       </div>
     </PageLayout>

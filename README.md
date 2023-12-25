@@ -1,4 +1,4 @@
-# Chirp
+# Clubadvisor
 
 [See it live here: https://🐦.t3.gg](https://🐦.t3.gg)
 
