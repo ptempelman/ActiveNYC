@@ -7,16 +7,16 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const signinRouter = createTRPCRouter({
     createUser: publicProcedure
-        .input(z.string().nullable())
+        .input(z.object({ id: z.string().nullish(), email: z.string().nullish() }))
         .query(async ({ ctx, input }) => {
-            if (input) {
+            if (input.id && input.email) {
                 const existingUser = await ctx.prisma.user.findUnique({
-                    where: { email: input },
+                    where: { id: input.id },
                 });
 
                 if (!existingUser) {
                     await ctx.prisma.user.create({
-                        data: { email: input },
+                        data: { id: input.id, email: input.email, },
                         // Add other fields as necessary
                     });
                 }
