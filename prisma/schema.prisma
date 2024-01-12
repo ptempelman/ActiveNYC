@@ -20,3 +20,53 @@ model Post {
 
     @@index([authorId])
 }
+
+model User {
+    id              String     @id @default(cuid())
+    email           String     @unique
+    age             Int?
+    dateCreated     DateTime   @default(now())
+    role            String     @default("user") // Role field added here
+    adminOf         Activity[] @relation("ActivityAdmins")
+    ratings         Rating[]
+    savedActivities Activity[] @relation("SavedActivities")
+}
+
+model Activity {
+    id         String     @id @default(cuid())
+    name       String
+    address    String
+    latitude   Float // 'x' coordinate
+    longitude  Float // 'y' coordinate
+    ratings    Rating[] // When a rating is deleted, the application should take it out of here
+    categories Category[] @relation
+    admins     User[]     @relation("ActivityAdmins")
+
+    averageRatingBarSpeed   Float? @default(0)
+    averageRatingMusic      Float? @default(0)
+    averageRatingWorthIt    Float? @default(0)
+    averageRatingExperience Float? @default(0)
+
+    savedByUsers User[] @relation("SavedActivities")
+}
+
+model Rating {
+    id         String   @id @default(cuid())
+    barSpeed   Float? // Non-null for 'party' or 'bar'
+    music      Float? // Non-null for 'party' or 'bar'
+    worthIt    Float? // Non-null for anything but 'party' or 'bar'
+    experience Float
+    activityId String
+    activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+    userId     String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([activityId]) // Adding an index on the activityId field
+    @@index([userId]) // Adding an index on the userId field
+}
+
+model Category {
+    id         String     @id @default(cuid())
+    name       String     @unique
+    activities Activity[] @relation
+}
