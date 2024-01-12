@@ -33,13 +33,14 @@ model Activity {
     id                      String     @id @default(cuid())
     name                    String
     address                 String
+    description             String     @db.Text
     latitude                Float
     longitude               Float
     websiteUrl              String?
-    averageRatingBarSpeed   Float?     @default(0)
-    averageRatingMusic      Float?     @default(0)
-    averageRatingWorthIt    Float?     @default(0)
-    averageRatingExperience Float?     @default(0)
+    averageRatingBarSpeed   Float?
+    averageRatingMusic      Float?
+    averageRatingWorthIt    Float?
+    averageRatingExperience Float?
     ratings                 Rating[]
     categories              Category[] @relation
     admins                  User[]     @relation("ActivityAdmins")

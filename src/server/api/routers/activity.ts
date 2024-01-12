@@ -10,6 +10,9 @@ export const activityRouter = createTRPCRouter({
     getAll: publicProcedure.query(async ({ ctx }) => {
         const activities = await ctx.prisma.activity.findMany({
             take: 100,
+            include: {
+                categories: true,
+            }
         });
 
         return activities;

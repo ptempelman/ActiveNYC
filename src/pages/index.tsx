@@ -120,7 +120,7 @@ const ActivityFeed = () => {
 };
 
 const Home: NextPage = () => {
-  const { isLoaded: userLoaded, isSignedIn , user} = useUser();
+  const { isLoaded: userLoaded, isSignedIn, user } = useUser();
 
   // console.log("USER", user?.primaryEmailAddress?.emailAddress)
 
@@ -134,17 +134,26 @@ const Home: NextPage = () => {
 
   return (
     <PageLayout>
-      <div className="flex border-b border-slate-400 p-4">
-        {!isSignedIn && (
-          <div className="flex justify-center">
-            <SignInButton />
-          </div>
-        )}
-        {isSignedIn && <CreatePostWizard />}
+      <div className="flex items-center justify-between border-b border-slate-400 p-4">
+        <div className="flex items-center gap-4">
+          <a href="/" className="text-gray-0 hover:text-gray-400 transition duration-300">ActiveNYC</a>
+          <a href="/find" className="text-gray-0 hover:text-gray-400 transition duration-300">Find</a>
+          <a href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</a>
+          <a href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</a>
+        </div>
+
+        <div>
+          {!isSignedIn && (
+            <div className="flex justify-center">
+              <SignInButton />
+            </div>
+          )}
+          {isSignedIn && <CreatePostWizard />}
+        </div>
       </div>
 
       <Feed />
-      <ActivityFeed/>
+      <ActivityFeed />
       <div className="flex items-center justify-between p-4 text-xl">
         <a href="https://github.com/t3dotgg/chirp">
           <div className="flex items-center justify-center gap-2">
