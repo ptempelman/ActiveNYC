@@ -1,72 +1,94 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
 }
 
-generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Post {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  content   String   @db.VarChar(255)
+  authorId  String
 
-    content  String @db.VarChar(255)
-    authorId String
-
-    @@index([authorId])
+  @@index([authorId])
 }
 
 model User {
-    id              String     @id @default(cuid())
-    email           String     @unique
-    age             Int?
-    dateCreated     DateTime   @default(now())
-    role            String     @default("user") // Role field added here
-    adminOf         Activity[] @relation("ActivityAdmins")
-    ratings         Rating[]
-    savedActivities Activity[] @relation("SavedActivities")
+  id              String     @id @default(cuid())
+  email           String     @unique
+  age             Int?
+  dateCreated     DateTime   @default(now())
+  role            String     @default("user")
+  adminOf         Activity[] @relation("ActivityAdmins")
+  ratings         Rating[]
+  savedActivities Activity[] @relation("SavedActivities")
 }
 
 model Activity {
-    id         String     @id @default(cuid())
-    name       String
-    address    String
-    latitude   Float // 'x' coordinate
-    longitude  Float // 'y' coordinate
-    ratings    Rating[] // When a rating is deleted, the application should take it out of here
-    categories Category[] @relation
-    admins     User[]     @relation("ActivityAdmins")
-
-    averageRatingBarSpeed   Float? @default(0)
-    averageRatingMusic      Float? @default(0)
-    averageRatingWorthIt    Float? @default(0)
-    averageRatingExperience Float? @default(0)
-
-    savedByUsers User[] @relation("SavedActivities")
+  id                      String     @id @default(cuid())
+  name                    String
+  address                 String
+  latitude                Float
+  longitude               Float
+  averageRatingBarSpeed   Float?     @default(0)
+  averageRatingMusic      Float?     @default(0)
+  averageRatingWorthIt    Float?     @default(0)
+  averageRatingExperience Float?     @default(0)
+  ratings                 Rating[]
+  categories              Category[] @relation
+  admins                  User[]     @relation("ActivityAdmins")
+  savedByUsers            User[]     @relation("SavedActivities")
 }
 
 model Rating {
-    id         String   @id @default(cuid())
-    barSpeed   Float? // Non-null for 'party' or 'bar'
-    music      Float? // Non-null for 'party' or 'bar'
-    worthIt    Float? // Non-null for anything but 'party' or 'bar'
-    experience Float
-    activityId String
-    activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-    userId     String
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  barSpeed   Float?
+  music      Float?
+  worthIt    Float?
+  experience Float
+  activityId String
+  userId     String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([activityId]) // Adding an index on the activityId field
-    @@index([userId]) // Adding an index on the userId field
+  @@index([activityId])
+  @@index([userId])
 }
 
 model Category {
-    id         String     @id @default(cuid())
-    name       String     @unique
-    activities Activity[] @relation
+  id         String     @id @default(cuid())
+  name       String     @unique
+  activities Activity[] @relation
+}
+
+model ActivityAdmins {
+  A String
+  B String
+
+  @@unique([A, B], map: "_ActivityAdmins_AB_unique")
+  @@index([B], map: "_ActivityAdmins_B_index")
+  @@map("_ActivityAdmins")
+}
+
+model ActivityToCategory {
+  A String
+  B String
+
+  @@unique([A, B], map: "_ActivityToCategory_AB_unique")
+  @@index([B], map: "_ActivityToCategory_B_index")
+  @@map("_ActivityToCategory")
+}
+
+model SavedActivities {
+  A String
+  B String
+
+  @@unique([A, B], map: "_SavedActivities_AB_unique")
+  @@index([B], map: "_SavedActivities_B_index")
+  @@map("_SavedActivities")
 }

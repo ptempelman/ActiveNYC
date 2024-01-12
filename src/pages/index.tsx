@@ -75,7 +75,7 @@ const CreatePostWizard = () => {
 
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
-  console.log("AAAAAA", data)
+  // console.log("AAAAAA", data)
 
   if (postsLoading)
     return (
@@ -96,7 +96,11 @@ const Feed = () => {
 };
 
 const Home: NextPage = () => {
-  const { isLoaded: userLoaded, isSignedIn } = useUser();
+  const { isLoaded: userLoaded, isSignedIn , user} = useUser();
+
+  // console.log("USER", user?.primaryEmailAddress?.emailAddress)
+
+  api.signin.createUser.useQuery(user?.primaryEmailAddress?.emailAddress ?? null);
 
   // Start fetching asap
   api.posts.getAll.useQuery();
