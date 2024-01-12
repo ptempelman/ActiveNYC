@@ -2,6 +2,7 @@ import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 
 import { api } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
 
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
+import { ActivityView } from "~/components/activityview";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -95,6 +97,28 @@ const Feed = () => {
   );
 };
 
+const ActivityFeed = () => {
+  const { data, isLoading: postsLoading } = api.activity.getAll.useQuery();
+  // console.log("AAAAAA", data)
+
+  if (postsLoading)
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
+
+  if (!data) return <div>Something went wrong</div>;
+
+  return (
+    <div className="flex grow flex-col overflow-y-scroll">
+      {[...data].map((activity) => (  // [...data, ...data, ...data, ...data]
+        <ActivityView {...activity} key={activity.id} />
+      ))}
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn , user} = useUser();
 
@@ -120,6 +144,7 @@ const Home: NextPage = () => {
       </div>
 
       <Feed />
+      <ActivityFeed/>
       <div className="flex items-center justify-between p-4 text-xl">
         <a href="https://github.com/t3dotgg/chirp">
           <div className="flex items-center justify-center gap-2">
