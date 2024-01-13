@@ -13,6 +13,8 @@ import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
 import { ActivityView } from "~/components/activityview";
 
+import { GoogleMap, InfoWindow, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+
 const theme = createTheme({
   components: {
     MuiButton: {
@@ -101,7 +103,7 @@ const Feed = () => {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="flex grow flex-col overflow-y-scroll">
+    <div className="flex grow flex-col">
       {[...data].map((fullPost) => (  // [...data, ...data, ...data, ...data]
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
@@ -111,7 +113,10 @@ const Feed = () => {
 
 const ActivityFeed = () => {
   const { data, isLoading: postsLoading } = api.activity.getAll.useQuery();
-  // console.log("AAAAAA", data)
+  const { isLoaded: mapLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  })
 
   if (postsLoading)
     return (
@@ -122,11 +127,39 @@ const ActivityFeed = () => {
 
   if (!data) return <div>Something went wrong</div>;
 
+  const containerStyle = {
+    width: '100%',
+    height: '100%'
+  };
+
   return (
-    <div className="flex grow flex-col overflow-y-scroll">
-      {[...data].map((activity) => (  // [...data, ...data, ...data, ...data]
-        <ActivityView {...activity} key={activity.id} />
-      ))}
+
+    <div className="flex">
+      <div className="flex-1">
+        {[...data].map((activity) => (  // [...data, ...data, ...data, ...data]
+          <ActivityView {...activity} key={activity.id} />
+        ))}
+      </div>
+      <div className="flex-1">
+        <div className="border border-gray-200 m-5 w-100% h-3/5">
+          {!mapLoaded && <div>Loading...</div>}
+          {mapLoaded &&
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={{ lat: 40.72889197585025, lng: -73.99479733097367 }}
+              zoom={13}
+            >
+
+              {data.map((activity) => (
+                <MarkerF
+                  key={`${activity.address}-${activity.name}`}
+                  position={{
+                    lat: activity.latitude, lng: activity.longitude
+                  }} />))}
+            </GoogleMap>
+          }
+        </div>
+      </div>
     </div>
   );
 };
