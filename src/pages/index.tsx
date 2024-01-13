@@ -15,6 +15,7 @@ import { ActivityView } from "~/components/activityview";
 
 import { GoogleMap, InfoWindow, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { set } from "zod";
+import { Backdrop, Box, Button, Checkbox, Fade, FormControlLabel, FormGroup, Modal, TextField, Typography } from "@mui/material";
 
 const theme = createTheme({
   components: {
@@ -130,8 +131,6 @@ const ActivityFeed = () => {
   };
   const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
 
-
-
   if (postsLoading)
     return (
       <div className="flex grow">
@@ -160,7 +159,7 @@ const ActivityFeed = () => {
           {mapLoaded &&
             <GoogleMap
               mapContainerStyle={containerStyle}
-              
+
               center={mapCenter}
               zoom={13}
               onLoad={map => {
@@ -218,6 +217,11 @@ const Home: NextPage = () => {
   // Start fetching asap
   api.posts.getAll.useQuery();
 
+  const [requestModalOpen, openRequestModal] = useState<boolean>(false);;
+
+  const handleOpen = () => openRequestModal(true);
+  const handleClose = () => openRequestModal(false);
+
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
 
@@ -231,6 +235,63 @@ const Home: NextPage = () => {
             <a href="/find" className="text-gray-0 hover:text-gray-400 transition duration-300">Find</a>
             <a href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</a>
             <a href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</a>
+            <a onClick={handleOpen} className="text-gray-0 hover:text-gray-400 transition duration-300">Request</a>
+
+            <Modal
+              open={requestModalOpen}
+              onClose={handleClose}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  timeout: 500,
+                },
+              }}
+            >
+              <Fade in={requestModalOpen}>
+                <div className="flex justify-center items-center h-screen">
+                  <div className="h-2/4 w-4/6 bg-white rounded-xl z-10">
+
+                    <form className="mx-auto my-10 p-6 bg-white shadow-md rounded">
+                      <h2 className="text-2xl font-bold mb-6 text-gray-800">Request New Activity</h2>
+
+                      <TextField className="w-full mb-4" label="Name" variant="outlined" />
+                      <TextField className="w-full mb-4" label="Address" variant="outlined" />
+                      <TextField className="w-full mb-4" label="Description" multiline rows={4} variant="outlined" />
+                      <TextField className="w-full mb-4" label="Latitude" type="number" variant="outlined" />
+                      <TextField className="w-full mb-4" label="Longitude" type="number" variant="outlined" />
+                      <TextField className="w-full mb-4" label="Website URL" variant="outlined" />
+
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <TextField label="Avg. Rating Bar Speed" type="number" variant="outlined" />
+                        <TextField label="Avg. Rating Music" type="number" variant="outlined" />
+                        <TextField label="Avg. Rating Worth It" type="number" variant="outlined" />
+                        <TextField label="Avg. Rating Experience" type="number" variant="outlined" />
+                      </div>
+
+                      <FormGroup row>
+                        {["Party", "Bar", "Relaxing", "Adventure", "Indoor", "Outdoor", "Sports", "Cultural"].map((category, index) => (
+                          <FormControlLabel
+                            key={index}
+                            className="text-gray-800"
+                            control={<Checkbox />}
+                            label={category}
+                          />
+                        ))}
+                      </FormGroup>
+
+                      <Button variant="contained" color="primary" className="w-full mt-6">
+                        Add Activity
+                      </Button>
+                    </form>
+
+
+
+                  </div>
+                </div>
+              </Fade>
+            </Modal>
+
           </div>
 
           <div>
