@@ -8,6 +8,8 @@ import { Cross1Icon } from "@radix-ui/react-icons";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const ActivityView = (activity: Activity) => {
+    console.log(activity.address)
+
     const hasPartyOrBar = activity.categories.some(cat => cat.name === 'Party' || cat.name === 'Bar');
     const hasNeitherPartyNorBar = activity.categories.every(cat => cat.name !== 'Party' && cat.name !== 'Bar');
 
@@ -21,14 +23,11 @@ export const ActivityView = (activity: Activity) => {
     const { mutate: unbookmark, isLoading: unbookmarkLoading } = api.activity.unbookmark.useMutation({
         onSuccess: () => {
             void ctx.activity.isBookmarked.refetch();
+            void ctx.activity.getAllBookmarks.refetch()
         }
     });
 
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
-    // const bookmarked = activity.savedByUsers.some(saved => saved.id == user?.id);
-
-    console.log({ userId: user?.id, activityId: activity?.id })
-
     const isBookmarked = api.activity.isBookmarked.useQuery({ userId: user?.id, activityId: activity?.id }).data?.bookmarked;
 
     return (

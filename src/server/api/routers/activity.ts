@@ -22,11 +22,44 @@ export const activityRouter = createTRPCRouter({
     getAllBookmarks: privateProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ ctx, input }) => {
-            ctx.prisma.savedActivities.findMany({
+            // const activities = await ctx.prisma.activity.findMany({
+            //     where: {
+            //         savedByUsers: {
+            //             some: {
+            //                 id: input.userId,
+            //             },
+            //         },
+            //     },
+            //     include: {
+            //         categories: true,
+            //         savedByUsers: true, // Include this if you need data about all users who saved each activity
+            //     }
+            // });
+            // console.log("AAAA", activities.length)
+            // return activities;
+
+            const savedActivityIds = await ctx.prisma.savedActivities.findMany({
                 where: {
                     A: input.userId,
                 },
+                select: {
+                    B: true, // Assuming 'B' stores activityId
+                },
             });
+
+            const activityIds = savedActivityIds.map(entry => entry.B);
+
+            const activities = await ctx.prisma.activity.findMany({
+                where: {
+                    id: { in: activityIds },
+                },
+                include: {
+                    categories: true,
+                    savedByUsers: true,
+                }
+            });
+            
+            return activities;
         }),
 
     isBookmarked: privateProcedure
@@ -47,11 +80,9 @@ export const activityRouter = createTRPCRouter({
                 },
             });
             if (!existingEntry) {
-                console.log("No bookmark entry found")
                 return { bookmarked: false }
             }
-            console.log("Bookmark entry found")
-            return {bookmarked: true}
+            return { bookmarked: true }
         }),
 
     bookmark: privateProcedure.input(
@@ -72,7 +103,6 @@ export const activityRouter = createTRPCRouter({
                 },
             });
             if (existingEntry) {
-                console.log("Already bookmarked")
                 throw new Error("ALREADY BOOKMARKED")
             }
 
@@ -105,7 +135,6 @@ export const activityRouter = createTRPCRouter({
                 },
             });
             if (!existingEntry) {
-                console.log("Not bookmarked")
                 throw new Error("NOT BOOKMARKED")
             }
 

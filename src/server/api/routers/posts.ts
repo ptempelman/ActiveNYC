@@ -84,7 +84,7 @@ export const postsRouter = createTRPCRouter({
     return addUserDataToPosts(posts);
   }),
 
-  getPostsByUserId: publicProcedure
+  getPostsByUserId: privateProcedure
     .input(
       z.object({
         userId: z.string(),
