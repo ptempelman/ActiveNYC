@@ -149,7 +149,6 @@ const ActivityFeed = () => {
               center={{ lat: 40.72889197585025, lng: -73.99479733097367 }}
               zoom={13}
             >
-
               {data.map((activity) => (
                 <MarkerF
                   key={`${activity.address}-${activity.name}`}
