@@ -7,13 +7,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
 import { ActivityView } from "~/components/activityview";
 
-import { GoogleMap, InfoWindow, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import { set } from "zod";
 
 const theme = createTheme({
   components: {
@@ -117,6 +118,19 @@ const ActivityFeed = () => {
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   })
+  type Activity = RouterOutputs["activity"]["getAll"][number];
+  const [selectedPlace, setSelectedPlace] = useState<Activity | undefined>(undefined);
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const panMapTo = ({ lat, lng }: { lat: number, lng: number }) => {
+    // setMapCenter({ lat, lng }); // Update the center state
+    if (mapRef.current) {
+      mapRef.current.panTo({ lat, lng });
+    }
+  };
+  const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
+
+
 
   if (postsLoading)
     return (
@@ -146,15 +160,47 @@ const ActivityFeed = () => {
           {mapLoaded &&
             <GoogleMap
               mapContainerStyle={containerStyle}
-              center={{ lat: 40.72889197585025, lng: -73.99479733097367 }}
+              
+              center={mapCenter}
               zoom={13}
+              onLoad={map => {
+                mapRef.current = map;
+              }}
             >
               {data.map((activity) => (
                 <MarkerF
                   key={`${activity.address}-${activity.name}`}
+                  onClick={() => {
+                    if (activity === selectedPlace) {
+                      setSelectedPlace(undefined);
+                    } else {
+                      setSelectedPlace(activity);
+                      panMapTo({ lat: activity.latitude, lng: activity.longitude });
+                    }
+                  }}
+                  position={{ lat: activity.latitude, lng: activity.longitude }}
+                />
+              ))}
+              {selectedPlace && (
+                <InfoWindowF
                   position={{
-                    lat: activity.latitude, lng: activity.longitude
-                  }} />))}
+                    lat: selectedPlace.latitude,
+                    lng: selectedPlace.longitude
+                  }}
+                  zIndex={1}
+                  options={{
+                    pixelOffset:
+                      // { width: 0, height: -40 },
+                      new google.maps.Size(0, -40),
+                  }}
+                  onCloseClick={() => setSelectedPlace(undefined)}
+                >
+                  <div>
+                    <h3 className="text-black">{selectedPlace.name}</h3>
+                    <p className="text-black">{selectedPlace.address}</p>
+                  </div>
+                </InfoWindowF>
+              )}
             </GoogleMap>
           }
         </div>
