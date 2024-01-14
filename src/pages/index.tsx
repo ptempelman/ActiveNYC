@@ -9,16 +9,16 @@ import { PageLayout } from "~/components/layout";
 import { ActivityFeed } from "~/components/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { CreatePostWizard } from "~/components/tweetBox";
-import { Feed } from "~/components/tweetFeed";
 import { TopBar } from "~/components/topBar";
 import { Footer } from "~/components/footer";
+import { FilterBar } from "~/components/filterBar";
 
 const theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          lineHeight: 0
+          lineHeight: '0'
         }
       }
     },
@@ -50,8 +50,9 @@ const Home: NextPage = () => {
             {isSignedIn && <CreatePostWizard />}
           </div>
         </div>
+        <FilterBar />
         <ActivityRequestModal />
-        <Feed />
+        {/* <Feed /> */}
         <ActivityFeed />
         <div className="flex items-center justify-between text-xl">
           <Footer />

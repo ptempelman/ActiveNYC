@@ -6,7 +6,6 @@ export const TopBar = () => {
             <a href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</a>
             <a href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</a>
             {/* <a onClick={handleOpen} className="text-gray-0 hover:text-gray-400 transition duration-300">Request</a> */}
-
         </div>
     )
 };

@@ -6,6 +6,7 @@ import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
+
   const { data } = api.posts.getById.useQuery({
     id,
   });

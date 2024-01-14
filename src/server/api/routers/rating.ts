@@ -7,6 +7,27 @@ import { ratelimit } from "./posts";
 
 export const ratingRouter = createTRPCRouter({
 
+    isRated: privateProcedure
+        .input(z.object({ userId: z.string().nullish(), activityId: z.string().nullish() }))
+        .query(async ({ ctx, input }) => {
+            if (!input.userId || !input.activityId) return { rated: false };
+            const { userId, activityId } = input;
+
+            // const { success } = await ratelimit.limit(userId);
+            // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+
+            const existingEntry = await ctx.prisma.rating.findFirst({
+                where: {
+                    userId: userId,
+                    activityId: activityId,
+                },
+            });
+            if (!existingEntry) {
+                return { rated: false }
+            }
+            return { rated: true }
+        }),
+
     create: privateProcedure
         .input(
             z.object({
@@ -20,8 +41,8 @@ export const ratingRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const userId = ctx.userId;
 
-            const { success } = await ratelimit.limit(userId);
-            if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+            // const { success } = await ratelimit.limit(userId);
+            // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
             const rating = await ctx.prisma.rating.create({
                 data: {

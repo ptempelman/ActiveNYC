@@ -36,8 +36,6 @@ export const ActivityFeed = () => {
 
     if (!data) return <div>Something went wrong</div>;
 
-    console.log(data.length)
-
     const containerStyle = {
         width: '100%',
         height: '100%'

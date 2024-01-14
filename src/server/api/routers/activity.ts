@@ -19,24 +19,27 @@ export const activityRouter = createTRPCRouter({
         return activities;
     }),
 
+    getById: publicProcedure
+        .input(z.object({ activityId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            if (!input?.activityId) throw new TRPCError({ code: "NOT_FOUND" });
+
+            const activity = await ctx.prisma.activity.findUnique({
+                where: {
+                    id: input.activityId,
+                },
+                include: {
+                    categories: true,
+                    savedByUsers: true,
+                }
+            });
+
+            return activity;
+        }),
+
     getAllBookmarks: privateProcedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ ctx, input }) => {
-            // const activities = await ctx.prisma.activity.findMany({
-            //     where: {
-            //         savedByUsers: {
-            //             some: {
-            //                 id: input.userId,
-            //             },
-            //         },
-            //     },
-            //     include: {
-            //         categories: true,
-            //         savedByUsers: true, // Include this if you need data about all users who saved each activity
-            //     }
-            // });
-            // console.log("AAAA", activities.length)
-            // return activities;
 
             const savedActivityIds = await ctx.prisma.savedActivities.findMany({
                 where: {
@@ -58,7 +61,7 @@ export const activityRouter = createTRPCRouter({
                     savedByUsers: true,
                 }
             });
-            
+
             return activities;
         }),
 
@@ -68,8 +71,8 @@ export const activityRouter = createTRPCRouter({
             if (!input.userId || !input.activityId) return { bookmarked: false };
             const { userId, activityId } = input;
 
-            const { success } = await ratelimit.limit(userId);
-            if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+            // const { success } = await ratelimit.limit(userId);
+            // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
             const existingEntry = await ctx.prisma.savedActivities.findUnique({
                 where: {
@@ -91,8 +94,8 @@ export const activityRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { userId, activityId } = input;
 
-            const { success } = await ratelimit.limit(userId);
-            if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+            // const { success } = await ratelimit.limit(userId);
+            // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
             const existingEntry = await ctx.prisma.savedActivities.findUnique({
                 where: {
@@ -123,8 +126,8 @@ export const activityRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { userId, activityId } = input;
 
-            const { success } = await ratelimit.limit(userId);
-            if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+            // const { success } = await ratelimit.limit(userId);
+            // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
             const existingEntry = await ctx.prisma.savedActivities.findUnique({
                 where: {
