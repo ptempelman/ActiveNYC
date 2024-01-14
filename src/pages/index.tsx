@@ -1,21 +1,17 @@
-import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 
-import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { api } from "~/utils/api";
 
-import Image from "next/image";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { PageLayout } from "~/components/layout";
-import { PostView } from "~/components/postview";
-import { ActivityView } from "~/components/activityview";
 
-import { GoogleMap, InfoWindow, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';
-import { set } from "zod";
-import { Backdrop, Box, Button, Checkbox, Fade, FormControlLabel, FormGroup, Modal, TextField, Typography } from "@mui/material";
+import { ActivityFeed } from "~/components/activityfeed";
+import { ActivityRequestModal } from "~/components/activityRequestModal";
+import { CreatePostWizard } from "~/components/tweetBox";
+import { Feed } from "~/components/tweetFeed";
+import { TopBar } from "~/components/topBar";
+import { Footer } from "~/components/footer";
 
 const theme = createTheme({
   components: {
@@ -29,271 +25,22 @@ const theme = createTheme({
   }
 });
 
-const CreatePostWizard = () => {
-  const { user } = useUser();
-
-  const [input, setInput] = useState("");
-
-  const ctx = api.useContext();
-
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: () => {
-      setInput("");
-      void ctx.posts.getAll.invalidate();
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
-      } else {
-        toast.error("Failed to post! Please try again later.");
-      }
-    },
-  });
-
-  if (!user) return null;
-
-  return (
-    <div className="flex w-full gap-3">
-      <UserButton appearance={{
-        elements: {
-          userButtonAvatarBox: {
-            width: 56,
-            height: 56
-          }
-        }
-      }} />
-      <input
-        placeholder="Type some emojis!"
-        className="grow bg-transparent outline-none"
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            if (input !== "") {
-              mutate({ content: input });
-            }
-          }
-        }}
-        disabled={isPosting}
-      />
-      {input !== "" && !isPosting && (
-        <button onClick={() => mutate({ content: input })}>Post</button>
-      )}
-      {isPosting && (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size={20} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Feed = () => {
-  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
-  // console.log("AAAAAA", data)
-
-  if (postsLoading)
-    return (
-      <div className="flex grow">
-        <LoadingPage />
-      </div>
-    );
-
-  if (!data) return <div>Something went wrong</div>;
-
-  return (
-    <div className="flex grow flex-col">
-      {[...data].map((fullPost) => (  // [...data, ...data, ...data, ...data]
-        <PostView {...fullPost} key={fullPost.post.id} />
-      ))}
-    </div>
-  );
-};
-
-const ActivityFeed = () => {
-  const { data, isLoading: postsLoading } = api.activity.getAll.useQuery();
-  const { isLoaded: mapLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  })
-  type Activity = RouterOutputs["activity"]["getAll"][number];
-  const [selectedPlace, setSelectedPlace] = useState<Activity | undefined>(undefined);
-
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const panMapTo = ({ lat, lng }: { lat: number, lng: number }) => {
-    // setMapCenter({ lat, lng }); // Update the center state
-    if (mapRef.current) {
-      mapRef.current.panTo({ lat, lng });
-    }
-  };
-  const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
-
-  if (postsLoading)
-    return (
-      <div className="flex grow">
-        <LoadingPage />
-      </div>
-    );
-
-  if (!data) return <div>Something went wrong</div>;
-
-  const containerStyle = {
-    width: '100%',
-    height: '100%'
-  };
-
-  return (
-
-    <div className="flex">
-      <div className="flex-1">
-        {[...data].map((activity) => (  // [...data, ...data, ...data, ...data]
-          <ActivityView {...activity} key={activity.id} />
-        ))}
-      </div>
-      <div className="flex-1">
-        <div className="border border-gray-200 m-5 w-100% h-3/5">
-          {!mapLoaded && <div>Loading...</div>}
-          {mapLoaded &&
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-
-              center={mapCenter}
-              zoom={13}
-              onLoad={map => {
-                mapRef.current = map;
-              }}
-            >
-              {data.map((activity) => (
-                <MarkerF
-                  key={`${activity.address}-${activity.name}`}
-                  onClick={() => {
-                    if (activity === selectedPlace) {
-                      setSelectedPlace(undefined);
-                    } else {
-                      setSelectedPlace(activity);
-                      panMapTo({ lat: activity.latitude, lng: activity.longitude });
-                    }
-                  }}
-                  position={{ lat: activity.latitude, lng: activity.longitude }}
-                />
-              ))}
-              {selectedPlace && (
-                <InfoWindowF
-                  position={{
-                    lat: selectedPlace.latitude,
-                    lng: selectedPlace.longitude
-                  }}
-                  zIndex={1}
-                  options={{
-                    pixelOffset:
-                      // { width: 0, height: -40 },
-                      new google.maps.Size(0, -40),
-                  }}
-                  onCloseClick={() => setSelectedPlace(undefined)}
-                >
-                  <div>
-                    <h3 className="text-black">{selectedPlace.name}</h3>
-                    <p className="text-black">{selectedPlace.address}</p>
-                  </div>
-                </InfoWindowF>
-              )}
-            </GoogleMap>
-          }
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
 
-  // console.log("USER", user?.primaryEmailAddress?.emailAddress)
   api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
 
   // Start fetching asap
   api.posts.getAll.useQuery();
-
-  const [requestModalOpen, openRequestModal] = useState<boolean>(false);;
-
-  const handleOpen = () => openRequestModal(true);
-  const handleClose = () => openRequestModal(false);
 
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
 
   return (
     <ThemeProvider theme={theme}>
-
       <PageLayout>
         <div className="flex items-center justify-between border-b border-slate-400 p-4">
-          <div className="flex items-center gap-4">
-            <a href="/" className="text-gray-0 hover:text-gray-400 transition duration-300">ActiveNYC</a>
-            <a href="/find" className="text-gray-0 hover:text-gray-400 transition duration-300">Find</a>
-            <a href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</a>
-            <a href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</a>
-            <a onClick={handleOpen} className="text-gray-0 hover:text-gray-400 transition duration-300">Request</a>
-
-            <Modal
-              open={requestModalOpen}
-              onClose={handleClose}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  timeout: 500,
-                },
-              }}
-            >
-              <Fade in={requestModalOpen}>
-                <div className="flex justify-center items-center h-screen">
-                  <div className="h-2/4 w-4/6 bg-white rounded-xl z-10">
-
-                    <form className="mx-auto my-10 p-6 bg-white shadow-md rounded">
-                      <h2 className="text-2xl font-bold mb-6 text-gray-800">Request New Activity</h2>
-
-                      <TextField className="w-full mb-4" label="Name" variant="outlined" />
-                      <TextField className="w-full mb-4" label="Address" variant="outlined" />
-                      <TextField className="w-full mb-4" label="Description" multiline rows={4} variant="outlined" />
-                      <TextField className="w-full mb-4" label="Latitude" type="number" variant="outlined" />
-                      <TextField className="w-full mb-4" label="Longitude" type="number" variant="outlined" />
-                      <TextField className="w-full mb-4" label="Website URL" variant="outlined" />
-
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <TextField label="Avg. Rating Bar Speed" type="number" variant="outlined" />
-                        <TextField label="Avg. Rating Music" type="number" variant="outlined" />
-                        <TextField label="Avg. Rating Worth It" type="number" variant="outlined" />
-                        <TextField label="Avg. Rating Experience" type="number" variant="outlined" />
-                      </div>
-
-                      <FormGroup row>
-                        {["Party", "Bar", "Relaxing", "Adventure", "Indoor", "Outdoor", "Sports", "Cultural"].map((category, index) => (
-                          <FormControlLabel
-                            key={index}
-                            className="text-gray-800"
-                            control={<Checkbox />}
-                            label={category}
-                          />
-                        ))}
-                      </FormGroup>
-
-                      <Button variant="contained" color="primary" className="w-full mt-6">
-                        Add Activity
-                      </Button>
-                    </form>
-
-
-
-                  </div>
-                </div>
-              </Fade>
-            </Modal>
-
-          </div>
-
+          <TopBar />
           <div>
             {!isSignedIn && (
               <div className="flex justify-center">
@@ -303,27 +50,11 @@ const Home: NextPage = () => {
             {isSignedIn && <CreatePostWizard />}
           </div>
         </div>
-
+        <ActivityRequestModal />
         <Feed />
         <ActivityFeed />
-        <div className="flex items-center justify-between p-4 text-xl">
-          <a href="https://github.com/t3dotgg/chirp">
-            <div className="flex items-center justify-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="white"
-              >
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-              <div>Github</div>
-            </div>
-          </a>
-          <span>
-            <a href="https://patreon.com/t3dotgg">🐦 Clubadvisor Blue</a>
-          </span>
+        <div className="flex items-center justify-between text-xl">
+          <Footer />
         </div>
       </PageLayout>
     </ThemeProvider>

@@ -1,10 +1,11 @@
-import { Button, Rating } from "@mui/material";
+import { Backdrop, Button, Fade, Modal, Rating } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { api, type RouterOutputs } from "~/utils/api";
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { useUser } from "@clerk/nextjs";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const ActivityView = (activity: Activity) => {
@@ -14,6 +15,11 @@ export const ActivityView = (activity: Activity) => {
     const hasNeitherPartyNorBar = activity.categories.every(cat => cat.name !== 'Party' && cat.name !== 'Bar');
 
     const ctx = api.useContext();
+
+
+    const [rateModalOpen, openRateModal] = useState<boolean>(false);;
+    const handleRateModalOpen = () => openRateModal(true);
+    const handleRateModalClose = () => openRateModal(false);
 
     const { mutate: bookmark, isLoading: bookmarkLoading } = api.activity.bookmark.useMutation({
         onSuccess: () => {
@@ -110,12 +116,41 @@ export const ActivityView = (activity: Activity) => {
                         </Button>
                     }
 
-                    <Button variant="contained" startIcon={<StarRateIcon />}>
+                    <Button onClick={() => handleRateModalOpen()} variant="contained" startIcon={<StarRateIcon />}>
                         Rate
                     </Button>
                 </div>
             </div>
+            <Modal
+                open={rateModalOpen}
+                onClose={handleRateModalClose}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                    backdrop: {
+                        timeout: 500,
+                    },
+                }}
+            >
+                <Fade in={rateModalOpen}>
+                    <div className="flex justify-center items-center h-screen w-screen">
+                        <div className="h-3/4 w-2/6 bg-white rounded-xl z-10">
+                            <form className="mx-auto my-10 p-6 bg-white shadow-md rounded">
+                                <p className="text-black">hey</p>
+
+                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
+                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
+                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
+                                <Button variant="contained" color="primary" className="w-full mt-6 h-12">
+                                    Submit Rating
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </Fade>
+            </Modal>
         </div >
+
 
     );
 };
