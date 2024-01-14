@@ -1,11 +1,12 @@
-import { Backdrop, Button, Fade, Modal, Rating } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
-import { api, type RouterOutputs } from "~/utils/api";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import StarRateIcon from '@mui/icons-material/StarRate';
 import { useUser } from "@clerk/nextjs";
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import DeleteIcon from '@mui/icons-material/Delete';
+import StarIcon from "@mui/icons-material/Star";
+import StarRateIcon from '@mui/icons-material/StarRate';
+import { Backdrop, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { api, type RouterOutputs } from "~/utils/api";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const ActivityView = (activity: Activity) => {
@@ -35,6 +36,28 @@ export const ActivityView = (activity: Activity) => {
 
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
     const isBookmarked = api.activity.isBookmarked.useQuery({ userId: user?.id, activityId: activity?.id }).data?.bookmarked;
+
+    const [rating1, setRating1] = useState(0);
+    const [rating2, setRating2] = useState(0);
+    const [rating3, setRating3] = useState(0);
+    const [rating4, setRating4] = useState(0);
+
+    const { mutate: createRating, isLoading: isRating } = api.rating.create.useMutation();
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault(); // Prevents the default form submission behavior
+
+        activityId: activity?.id,
+            rating1,
+            rating2,
+            rating3,
+            rating4
+
+        api.rating.create.useMutation({
+
+        })
+    };
+
 
     return (
         <div className="border border-gray-200 rounded-lg shadow-md m-4 p-4 w-10/12 mx-auto bg-gray-800 text-white">
@@ -66,7 +89,10 @@ export const ActivityView = (activity: Activity) => {
                             <div>
                                 <span>Bar Speed: </span>
                                 {activity.averageRatingBarSpeed != null ? (
-                                    <Rating name="half-rating" value={activity.averageRatingBarSpeed} precision={0.1} readOnly emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} />
+                                    <Rating name="half-rating" value={activity.averageRatingBarSpeed} precision={0.1} readOnly
+                                        icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                        emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                    />
                                 ) : (
                                     <span>N/A</span>
                                 )}
@@ -74,7 +100,9 @@ export const ActivityView = (activity: Activity) => {
                             <div>
                                 <span>Music: </span>
                                 {activity.averageRatingMusic != null ? (
-                                    <Rating name="half-rating" value={activity.averageRatingMusic} precision={0.1} readOnly emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} />
+                                    <Rating name="half-rating" value={activity.averageRatingMusic} precision={0.1} readOnly
+                                        icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                        emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />} />
                                 ) : (
                                     <span>N/A</span>
                                 )}
@@ -85,7 +113,10 @@ export const ActivityView = (activity: Activity) => {
                         <div>
                             <span>Worth It: </span>
                             {activity.averageRatingWorthIt != null ? (
-                                <Rating name="half-rating" value={activity.averageRatingWorthIt} precision={0.1} readOnly emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} />
+                                <Rating name="half-rating" value={activity.averageRatingWorthIt} precision={0.1} readOnly
+                                    icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                    emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                />
                             ) : (
                                 <span>N/A</span>
                             )}
@@ -94,7 +125,10 @@ export const ActivityView = (activity: Activity) => {
                     <div>
                         <span>Experience: </span>
                         {activity.averageRatingExperience != null ? (
-                            <Rating name="half-rating" value={activity.averageRatingExperience} precision={0.1} readOnly emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} />
+                            <Rating name="half-rating" value={activity.averageRatingExperience} precision={0.1} readOnly
+                                icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                            />
                         ) : (
                             <span>N/A</span>
                         )}
@@ -134,23 +168,82 @@ export const ActivityView = (activity: Activity) => {
             >
                 <Fade in={rateModalOpen}>
                     <div className="flex justify-center items-center h-screen w-screen">
-                        <div className="h-3/4 w-2/6 bg-white rounded-xl z-10">
-                            <form className="mx-auto my-10 p-6 bg-white shadow-md rounded">
-                                <p className="text-black">hey</p>
+                        <div className="h-auto w-1/4 bg-white rounded-xl z-10">
+                            <form className="p-6" onSubmit={() => createRating(
+                                {
+                                    activityId: activity.id,
+                                    barSpeed: rating1,
+                                    music: rating2,
+                                    worthIt: rating3,
+                                    experience: rating4
+                                }
+                            )}
+                            >
+                                {hasPartyOrBar && (
+                                    <>
+                                        <div>
+                                            <span className="text-gray-600">Bar Speed: </span>
+                                            <Rating name="rating1"
+                                                value={rating1}
+                                                onChange={(event, newValue) => {
+                                                    setRating1(newValue ?? 0);
+                                                }}
+                                                icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                                emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                            />
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-600">Music: </span>
+                                            <Rating name="rating2"
+                                                value={rating2}
+                                                onChange={(event, newValue) => {
+                                                    setRating2(newValue ?? 0);
+                                                }}
+                                                icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                                emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                                {hasNeitherPartyNorBar && (
+                                    <div>
+                                        <span className="text-gray-600">Worth it: </span>
+                                        <Rating name="rating3" value={rating3}
+                                            onChange={(event, newValue) => {
+                                                setRating3(newValue ?? 0);
+                                            }}
+                                            icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                            emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                        />
+                                    </div>
+                                )}
+                                <div>
+                                    <span className="text-gray-600">Experience: </span>
+                                    <Rating name="rating4" value={rating4}
+                                        onChange={(event, newValue) => {
+                                            setRating4(newValue ?? 0);
+                                        }}
+                                        icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
+                                        emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />} />
+                                </div>
+                                <div className="mt-4 h-12 flex">
+                                    <div className="h-full w-12">
+                                        <IconButton onClick={() => handleRateModalClose()} size="large" className="h-full w-12">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </div>
+                                    <div className="ml-3 w-5/6">
+                                        <Button type="submit" onClick={() => handleRateModalClose()} variant="contained" color="primary" className="w-full m-2 h-full">
+                                            Submit Rating
+                                        </Button>
+                                    </div>
 
-                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
-                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
-                                <div><Rating name="half-rating" value={0} emptyIcon={<StarIcon style={{ opacity: 0.9, color: "gray" }} fontSize="inherit" />} /></div>
-                                <Button variant="contained" color="primary" className="w-full mt-6 h-12">
-                                    Submit Rating
-                                </Button>
+                                </div>
                             </form>
                         </div>
                     </div>
                 </Fade>
             </Modal>
         </div >
-
-
     );
 };
