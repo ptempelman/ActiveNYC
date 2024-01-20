@@ -9,11 +9,9 @@ import { PageLayout } from "~/components/layout";
 import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { CreatePostWizard } from "~/components/tweetBox";
-import { Feed } from "~/components/tweetFeed";
 import { TopBar } from "~/components/topBar";
 import { Footer } from "~/components/footer";
-import { SingleActivity } from "~/components/activity/singleActivity";
-import { useRouter } from "next/router";
+import { FilterBar } from "~/components/filter/filterBar";
 
 const theme = createTheme({
     components: {
@@ -28,11 +26,6 @@ const theme = createTheme({
 });
 
 const Home: NextPage = () => {
-    const router = useRouter();
-    const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id
-
-    if (!id) return <div>404</div>;
-
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
 
     api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
@@ -57,9 +50,10 @@ const Home: NextPage = () => {
                         {isSignedIn && <CreatePostWizard />}
                     </div>
                 </div>
-                {/* <ActivityRequestModal /> */}
+                <FilterBar />
+                <ActivityRequestModal />
                 {/* <Feed /> */}
-                <SingleActivity activityId={id} />
+                <ActivityFeed />
                 <div className="flex items-center justify-between text-xl">
                     <Footer />
                 </div>

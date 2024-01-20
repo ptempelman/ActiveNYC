@@ -3,7 +3,7 @@ import type { RouterOutputs } from "~/utils/api";
 import { api } from "~/utils/api";
 
 import { useRef, useState } from "react";
-import { ActivityView } from "~/components/activityview";
+import { ActivityView } from "~/components/activity/activityview";
 import { LoadingPage } from "~/components/loading";
 
 import { GoogleMap, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';

@@ -47,14 +47,14 @@ export const ActivityRequestModal = () => {
                             <TextField className="w-full mb-4" label="Description" multiline rows={4} variant="outlined" />
                             {/* <TextField className="w-full mb-4" label="Website URL" variant="outlined" /> */}
                             <FormGroup row className="justify-center">
-                                {["Party", "Bar", "Relaxing", "Adventure", "Indoor", "Outdoor", "Sports", "Cultural"].map((category, index) => (
+                                {["Party", "Relaxing", "Adventure", "Cultural", "Sports", "Bar", "Indoor", "Outdoor"].map((category, index) => (
                                     <div className="m-1">
                                         <Button variant={categoriesClicked[index] ? "contained" : "outlined"} className="h-6" key={index} onClick={() => handleCategoryClicked(index)}>{category}</Button>
                                     </div>
                                 ))}
                             </FormGroup>
                             <div className="grid grid-cols-2 gap-4 mb-4">
-                                <TextField label="Avg. Rating Bar Speed" type="number" variant="outlined" />
+                                <TextField label="Avg. Rating Bar" type="number" variant="outlined" />
                                 <TextField label="Avg. Rating Music" type="number" variant="outlined" />
                                 <TextField label="Avg. Rating Worth It" type="number" variant="outlined" />
                                 <TextField label="Avg. Rating Experience" type="number" variant="outlined" />

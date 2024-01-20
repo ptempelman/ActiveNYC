@@ -2,7 +2,7 @@ import { useUser } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 
-import { ActivityView } from "~/components/activityview";
+import { ActivityView } from "~/components/activity/activityview";
 import { LoadingPage } from "~/components/loading";
 
 

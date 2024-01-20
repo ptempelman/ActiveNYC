@@ -6,12 +6,12 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
-import { ActivityFeed } from "~/components/activityfeed";
+import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { CreatePostWizard } from "~/components/tweetBox";
 import { TopBar } from "~/components/topBar";
 import { Footer } from "~/components/footer";
-import { FilterBar } from "~/components/filterBar";
+import { FilterBar } from "~/components/filter/filterBar";
 
 const theme = createTheme({
   components: {
