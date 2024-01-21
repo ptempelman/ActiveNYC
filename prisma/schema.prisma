@@ -58,6 +58,7 @@ model Rating {
     activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    @@unique([userId, activityId], name: "userId_activityId")
     @@index([activityId])
     @@index([userId])
 }

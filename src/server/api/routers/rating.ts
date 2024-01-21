@@ -44,9 +44,21 @@ export const ratingRouter = createTRPCRouter({
             // const { success } = await ratelimit.limit(userId);
             // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
-            const rating = await ctx.prisma.rating.create({
-                data: {
-                    userId,
+            const rating = await ctx.prisma.rating.upsert({
+                where: {
+                    userId_activityId: {
+                        userId: userId,
+                        activityId: input.activityId,
+                    },
+                },
+                update: {
+                    barSpeed: input.barSpeed,
+                    music: input.music,
+                    worthIt: input.worthIt,
+                    experience: input.experience,
+                },
+                create: {
+                    userId: userId,
                     barSpeed: input.barSpeed,
                     music: input.music,
                     worthIt: input.worthIt,
