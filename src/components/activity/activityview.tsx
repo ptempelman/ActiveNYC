@@ -8,8 +8,8 @@ import { Cross1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 import CheckIcon from '@mui/icons-material/Check';
-import { RatingComponent } from "./ratingComponent";
-import { RateModal } from "./rateModal";
+import { RatingComponent } from "./rating/ratingComponent";
+import { RateModal } from "./rating/rateModal";
 import Link from "next/link";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
@@ -67,37 +67,42 @@ export const ActivityView = (activity: Activity) => {
                     <p>{activity.description}</p>
                 </div>
                 <div className="flex justify-between mt-4">
-                    <RatingComponent {...activity} />
-                    {/* Column for Buttons */}
-                    <div className="flex flex-col items-start gap-2 mt-auto">
-                        {isSignedIn && isBookmarked &&
-                            <Button onMouseEnter={() => setIsHovered(true)}
-                                onMouseLeave={() => setIsHovered(false)} size="large" color="success" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); unbookmark({ userId: user.id, activityId: activity.id }); }} variant="contained" startIcon={isHovered ? <Cross1Icon /> : <CheckIcon />}
-                                sx={(theme) => ({
-                                    '&:hover': {
-                                        backgroundColor: theme.palette.error.light,
-                                        color: 'white'
-                                    },
-                                })}>
-                                {isHovered ? 'Remove' : 'Saved'}
-                            </Button>
-                        }
-
-                        {isSignedIn && !isBookmarked &&
-                            <Button size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); bookmark({ userId: user.id, activityId: activity.id }) }} variant="contained" startIcon={<BookmarkAddIcon />}>
-                                Save
-                            </Button>
-                        }
-                        {isSignedIn &&
-                            <Button onMouseEnter={() => setRatingIsHovered(true)}
-                                onMouseLeave={() => setRatingIsHovered(false)} color={isRated ? 'success' : 'primary'} size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalOpen() }} variant="contained" startIcon={isRated ? (ratingIsHovered ? <StarRateIcon /> : <CheckIcon />) : <StarRateIcon />}>
-                                {isRated ? (ratingIsHovered ? 'Update' : 'Rated') : 'Rate'}
-                            </Button>
-                        }
+                    <div className="w-auto">
+                        <RatingComponent {...activity} />
                     </div>
+                    <div className="w-auto m-1">
+                        {/* Column for Buttons */}
+                        <div className="flex flex-col items-start gap-2 mt-auto">
+                            {isSignedIn && isBookmarked &&
+                                <Button onMouseEnter={() => setIsHovered(true)}
+                                    onMouseLeave={() => setIsHovered(false)} size="large" color="success" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); unbookmark({ userId: user.id, activityId: activity.id }); }} variant="contained" startIcon={isHovered ? <Cross1Icon /> : <CheckIcon />}
+                                    sx={(theme) => ({
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.error.light,
+                                            color: 'white'
+                                        },
+                                    })}>
+                                    {isHovered ? 'Remove' : 'Saved'}
+                                </Button>
+                            }
+
+                            {isSignedIn && !isBookmarked &&
+                                <Button size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); bookmark({ userId: user.id, activityId: activity.id }) }} variant="contained" startIcon={<BookmarkAddIcon />}>
+                                    Save
+                                </Button>
+                            }
+                            {isSignedIn &&
+                                <Button onMouseEnter={() => setRatingIsHovered(true)}
+                                    onMouseLeave={() => setRatingIsHovered(false)} color={isRated ? 'success' : 'primary'} size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalOpen() }} variant="contained" startIcon={isRated ? (ratingIsHovered ? <StarRateIcon /> : <CheckIcon />) : <StarRateIcon />}>
+                                    {isRated ? (ratingIsHovered ? 'Update' : 'Rated') : 'Rate'}
+                                </Button>
+                            }
+                        </div>
+                    </div>
+
                 </div>
-                <RateModal {...{ activity, rateModalOpen, handleRateModalOpen, handleRateModalClose }} />
             </Link>
+            <RateModal {...{ activity, rateModalOpen, handleRateModalOpen, handleRateModalClose }} />
         </div >
     );
 };

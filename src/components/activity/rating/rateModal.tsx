@@ -21,17 +21,14 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
     const [rating2, setRating2] = useState(0);
     const [rating3, setRating3] = useState(0);
     const [rating4, setRating4] = useState(0);
-    const { mutate: createRating, isLoading: isRating } = api.rating.create.useMutation();
-    const handleSubmit = (event: any) => {
-        event.preventDefault(); // Prevents the default form submission behavior
-        activityId: activity?.id,
-            rating1,
-            rating2,
-            rating3,
-            rating4
-        api.rating.create.useMutation({
-        })
-    };
+
+    const ctx = api.useContext();
+
+    const { mutate: createRating, isLoading: ratingLoading } = api.rating.create.useMutation({
+        onSuccess: () => {
+            void ctx.activity.getAll.refetch();
+        }
+    });
 
     return (
         <Modal
@@ -48,15 +45,18 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
             <Fade in={rateModalOpen}>
                 <div className="flex justify-center items-center h-screen w-screen">
                     <div className="h-auto w-1/4 bg-white rounded-xl z-10">
-                        <form className="p-6" onSubmit={() => createRating(
-                            {
-                                activityId: activity.id,
-                                barSpeed: rating1,
-                                music: rating2,
-                                worthIt: rating3,
-                                experience: rating4
-                            }
-                        )}
+                        <form className="p-6" onSubmit={(e) => {
+                            e.preventDefault();
+                            createRating(
+                                {
+                                    activityId: activity.id,
+                                    barSpeed: rating1,
+                                    music: rating2,
+                                    worthIt: rating3,
+                                    experience: rating4
+                                }
+                            )
+                        }}
                         >
                             {hasPartyOrBar && (
                                 <>
@@ -107,12 +107,12 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
                             </div>
                             <div className="mt-4 h-12 flex">
                                 <div className="h-full w-12">
-                                    <IconButton onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalClose() }} size="large" className="h-full w-12">
+                                    <IconButton onClick={(e) => { handleRateModalClose() }} size="large" className="h-full w-12">
                                         <DeleteIcon />
                                     </IconButton>
                                 </div>
                                 <div className="ml-3 w-5/6">
-                                    <Button type="submit" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalClose() }} variant="contained" color="primary" className="w-full m-2 h-full">
+                                    <Button type="submit" onClick={(e) => { handleRateModalClose() }} variant="contained" color="primary" className="w-full m-2 h-full">
                                         Submit Rating
                                     </Button>
                                 </div>
