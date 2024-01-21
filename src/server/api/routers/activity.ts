@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { ratelimit } from "./posts";
 import { Activity } from "@prisma/client";
+import { ac } from "@upstash/redis/zmscore-fa7fc9c8";
 
 export const activityRouter = createTRPCRouter({
 
@@ -13,22 +14,59 @@ export const activityRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const { searchText, selectedCategoryIds } = input;
 
-            let activities = await ctx.prisma.activity.findMany({
-                where: {
-                    OR: searchText ? [
+
+            let where = undefined;
+
+            // Check if searchText is not empty, and build the searchText condition
+            if (searchText) {
+                where = {
+                    OR: [
                         { name: { contains: searchText } },
                         { description: { contains: searchText } },
-                    ] : undefined,
-                    AND: selectedCategoryIds.length > 0 ? selectedCategoryIds.map(id => ({
-                        categories: {
-                            some: { id }
-                        }
-                    })) : undefined
-                },
-                include: {
-                    categories: true,
+                    ]
+                };
+            }
+
+            // Check if selectedCategoryIds is not empty, and build the category name conditions
+            if (selectedCategoryIds.length > 0) {
+                const categoryConditions = selectedCategoryIds.map(name => ({
+                    categories: {
+                        some: { name }
+                    }
+                }));
+
+                // If where is undefined, set it to the categoryConditions
+                if (!where) {
+                    where = {
+                        OR: categoryConditions
+                    };
+                } else {
+                    // Combine searchText condition with categoryConditions using OR
+                    where = {
+                        OR: [
+                            where,
+                            ...categoryConditions
+                        ]
+                    };
                 }
-            });
+            }
+
+            // Conditionally apply the where condition only when where is defined
+            const activities = where
+                ? await ctx.prisma.activity.findMany({
+                    where,
+                    include: {
+                        categories: true,
+                        savedByUsers: true,
+                    },
+                })
+                : await ctx.prisma.activity.findMany({
+                    include: {
+                        categories: true,
+                        savedByUsers: true,
+                    },
+                });
+
 
             type ActivityWithScore = Activity & { score: number };
 
@@ -36,20 +74,20 @@ export const activityRouter = createTRPCRouter({
             let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
                 let score = 0;
                 if (searchText) {
-                    if (activity.name.includes(searchText)) score += 1;
-                    if (activity.description.includes(searchText)) score += 1;
+                    if (activity.name.toLowerCase().includes(searchText)) score += 3;
+                    if (activity.description.toLowerCase().includes(searchText)) score += 2;
                 }
                 if (selectedCategoryIds.length > 0) {
-                    const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.id));
+                    const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.name));
                     score += matchedCategories.length;
                 }
                 return { ...activity, score };
             });
 
             // Step 3: Sort activities based on the score
-            activitiesWithScores.sort((a, b) => b.score - a.score);
+            activitiesWithScores = activitiesWithScores.sort((a, b) => b.score - a.score);
 
-            return activities;
+            return activitiesWithScores;
         }),
 
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -60,6 +98,15 @@ export const activityRouter = createTRPCRouter({
                 savedByUsers: true,
             }
         });
+
+        if (activities && activities.length > 0) {
+            console.log("Categories of the first activity:", activities[0].categories);
+            // Optionally, log the type of categories and a single entry
+            console.log("Type of categories:", typeof activities[0].categories);
+            if (activities[0].categories.length > 0) {
+                console.log("First category entry:", activities[0].categories[0]);
+            }
+        }
 
         return activities;
     }),

@@ -33,7 +33,7 @@ export const GoogleMapComponent = ({ activities }: { activities: Activity[] }) =
     const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
 
     return (
-        <div className="border border-gray-200 m-5 w-100% h-3/5">
+        <div className="border border-gray-200 m-5 w-100% h-full">
             {!mapLoaded && <div>Loading...</div>}
             {mapLoaded &&
                 <GoogleMap

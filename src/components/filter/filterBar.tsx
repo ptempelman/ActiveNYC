@@ -1,16 +1,18 @@
 import { FilterBarSearch } from "./filterBarSearch";
 import { FilterBarCategory } from "./filterBarCategory";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
-export const FilterBar = () => {
+
+export const FilterBar = ({ selectedCategories, setSelectedCategories, handleClearCategory, handleChangeCategories, searchValue, setSearchValue, handleClearSearch }: { selectedCategories: string[], setSelectedCategories: Dispatch<SetStateAction<string[]>>, handleClearCategory: () => void, handleChangeCategories: (e: ChangeEvent<{ value: unknown}>) => void, searchValue: string, setSearchValue: (e: string) => void, handleClearSearch: () => void }) => {
 
     return (
         <div className="border-slate-400 border-b h-14 w-full">
             <div className="flex flex-wrap -mx-2 h-full">
                 <div className="w-full md:w-4/12 px-2 border-r border-slate-400">
-                    <FilterBarSearch />
+                    <FilterBarSearch searchValue={searchValue} setSearchValue={setSearchValue} handleClearSearch={handleClearSearch} />
                 </div>
                 <div className="w-full md:w-4/12 px-2 border-r border-slate-400">
-                    <FilterBarCategory />
+                    <FilterBarCategory selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} handleClearCategory={handleClearCategory} handleChangeCategories={handleChangeCategories} />
                 </div>
                 <div className="w-full md:w-4/12 px-2">
                 </div>

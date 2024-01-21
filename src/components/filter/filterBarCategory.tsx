@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material"
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-export const FilterBarCategory = () => {
+export const FilterBarCategory = ({ selectedCategories, setSelectedCategories, handleClearCategory, handleChangeCategories }: { selectedCategories: string[], setSelectedCategories: Dispatch<SetStateAction<string[]>>, handleClearCategory: () => void, handleChangeCategories: (e: ChangeEvent<{ value: unknown }>) => void }) => {
 
     function CustomSelectIcon({ open }: { open: boolean }) {
         return open ?
@@ -17,17 +17,7 @@ export const FilterBarCategory = () => {
 
     }
 
-    const handleClearCategory = () => {
-        setSelectedCategories([]);
-    }
-
-    const [selectedValues, setSelectedCategories] = useState<string[]>([]);
     const [open, setOpen] = useState<boolean>(false);
-
-    const handleChange = (event: ChangeEvent<{ value: unknown }>) => {
-        setSelectedCategories(event.target.value as string[]);
-    };
-
     const handleOpen = () => {
         setOpen(true);
     };
@@ -55,8 +45,8 @@ export const FilterBarCategory = () => {
                     labelId="demo-multiple-select-label"
                     id="demo-multiple-select"
                     multiple
-                    value={selectedValues}
-                    onChange={handleChange}
+                    value={selectedCategories}
+                    onChange={handleChangeCategories}
                     open={open}
                     onOpen={handleOpen}
                     onClose={handleClose}
@@ -83,7 +73,7 @@ export const FilterBarCategory = () => {
                         },
                     }}
                     endAdornment={
-                        selectedValues.length > 0 ? (
+                        selectedCategories.length > 0 ? (
                             <IconButton onClick={handleClearCategory} sx={{ color: 'white' }}>
                                 <CloseIcon />
                             </IconButton>

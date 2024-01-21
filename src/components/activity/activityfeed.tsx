@@ -10,8 +10,10 @@ import { GoogleMap, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-m
 import { GoogleMapComponent } from "../googleMapComponent";
 
 
-export const ActivityFeed = () => {
-    const { data, isLoading: activitiesLoading } = api.activity.getAll.useQuery();
+export const ActivityFeed = ({ selectedCategories, searchValue }: { selectedCategories: string[], searchValue: string }) => {
+    // const { data: activities, isLoading: activitiesLoading } = api.activity.getAll.useQuery();
+    const { data: activities, isLoading: activitiesLoading } = api.activity.searchActivities.useQuery({searchText: searchValue, selectedCategoryIds: selectedCategories});
+
 
     if (activitiesLoading)
         return (
@@ -20,19 +22,18 @@ export const ActivityFeed = () => {
             </div>
         );
 
-    if (!data) return <div>Something went wrong</div>;
+    if (!activities) return <div>Something went wrong</div>;
 
     return (
 
-        <div className="flex">
+        <div className="flex h-screen">
             <div className="flex-1">
-                {[...data].map((activity) => (  // [...data, ...data, ...data, ...data]
+                {[...activities].map((activity) => (  // [...data, ...data, ...data, ...data]
                     <ActivityView {...activity} key={activity.id} />
                 ))}
             </div>
-            <div className="flex-1">
-
-                <GoogleMapComponent activities={data} />
+            <div className="flex-1 h-3/4">
+                <GoogleMapComponent activities={activities} />
             </div>
         </div>
     );

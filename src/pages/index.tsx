@@ -12,6 +12,8 @@ import { CreatePostWizard } from "~/components/tweetBox";
 import { TopBar } from "~/components/topBar";
 import { Footer } from "~/components/footer";
 import { FilterBar } from "~/components/filter/filterBar";
+import { ChangeEvent, useState } from "react";
+import { set } from "zod";
 
 const theme = createTheme({
   components: {
@@ -33,9 +35,23 @@ const Home: NextPage = () => {
   // Start fetching asap
   api.posts.getAll.useQuery();
 
+  const [searchValue, setSearchValue] = useState('');
+  const handleClearSearch = () => {
+    setSearchValue('');
+  };
+
+  const handleClearCategory = () => {
+    setSelectedCategories([]);
+  }
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const handleChangeCategories = (event: ChangeEvent<{ value: unknown }>) => {
+    setSelectedCategories(event.target.value as string[]);
+  };
+
+  console.log(selectedCategories)
+
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
-
   return (
     <ThemeProvider theme={theme}>
       <PageLayout>
@@ -50,10 +66,10 @@ const Home: NextPage = () => {
             {isSignedIn && <CreatePostWizard />}
           </div>
         </div>
-        <FilterBar />
+        <FilterBar selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} handleClearCategory={handleClearCategory} handleChangeCategories={handleChangeCategories} searchValue={searchValue} setSearchValue={setSearchValue} handleClearSearch={handleClearSearch} />
         <ActivityRequestModal />
         {/* <Feed /> */}
-        <ActivityFeed />
+        <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} /> 
         <div className="flex items-center justify-between text-xl">
           <Footer />
         </div>
