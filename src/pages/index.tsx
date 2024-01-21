@@ -10,6 +10,7 @@ import { SelectChangeEvent } from "@mui/material";
 import { ReactNode, useState } from "react";
 import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
+import { AdminBar } from "~/components/adminBar";
 import { FilterBar } from "~/components/filter/filterBar";
 import { Footer } from "~/components/footer";
 import { TopBar } from "~/components/topBar";
@@ -48,11 +49,16 @@ const Home: NextPage = () => {
     setSelectedCategories(event.target.value as string[]);
   };
 
+  const isAdminUser = api.profile.isAdminUser.useQuery({ userId: user?.id }).data?.isAdmin;
+  console.log(isAdminUser)
+
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
   return (
     <ThemeProvider theme={theme}>
       <PageLayout>
+        {isAdminUser && <AdminBar />}
+
         <div className="flex items-center justify-between border-b border-slate-400 p-4">
           <TopBar />
           <div>

@@ -3,7 +3,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 export const profileRouter = createTRPCRouter({
@@ -33,5 +33,28 @@ export const profileRouter = createTRPCRouter({
 
       return filterUserForClient(user);
 
+    }),
+
+  isAdminUser: privateProcedure
+    .input(z.object({ userId: z.string().nullish() }))
+    .query(async ({ ctx, input }) => {
+
+      if (!input.userId) {
+        return { isAdmin: false }
+      }
+
+      // Fetch the user from the database
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        return { isAdmin: false }
+      }
+
+      console.log(user.role)
+
+      // Check if the user has an 'Admin' role
+      return { isAdmin: user.role === 'admin' }
     }),
 });
