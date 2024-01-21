@@ -15,7 +15,7 @@ export const SingleRating = ({ ratingText, averageRating }: { ratingText: string
                         emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
                     />
                 ) : (
-                    <span>No ratings</span>
+                    <span>no ratings</span>
                 )}
             </div>
         </div>

@@ -53,8 +53,8 @@ export const ActivityView = (activity: Activity) => {
                         ))}
                     </div>
                 </div>
-                <p className="text-gray-300">{activity.address}</p>
-                <div className="mt-2 text-gray-400 text-sm">
+                <p className="mt-3 text-gray-300">{activity.address}</p>
+                <div className="mt-2 text-gray-300 text-sm">
                     {activity.websiteUrl && (
                         <a href={activity.websiteUrl} onClick={(e) => { e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
                             Visit Website

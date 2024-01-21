@@ -6,7 +6,7 @@ import { ActivityView } from "~/components/activity/activityview";
 import { LoadingPage } from "~/components/loading";
 
 
-export const SavedActivityFeed = () => {
+export const LikedActivityFeed = () => {
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
     if (!isSignedIn) return <div />;
 

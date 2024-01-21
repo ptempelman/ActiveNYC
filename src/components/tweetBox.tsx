@@ -42,7 +42,7 @@ export const CreatePostWizard = () => {
                     }
                 }
             }} />
-            <input
+            {/* <input
                 placeholder="Type some emojis!"
                 className="grow bg-transparent outline-none"
                 type="text"
@@ -57,15 +57,15 @@ export const CreatePostWizard = () => {
                     }
                 }}
                 disabled={isPosting}
-            />
-            {input !== "" && !isPosting && (
+            /> */}
+            {/* {input !== "" && !isPosting && (
                 <button onClick={() => mutate({ content: input })}>Post</button>
-            )}
-            {isPosting && (
+            )} */}
+            {/* {isPosting && (
                 <div className="flex items-center justify-center">
                     <LoadingSpinner size={20} />
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

@@ -16,6 +16,7 @@ import { Footer } from "~/components/footer";
 import { TopBar } from "~/components/topBar";
 import { CreatePostWizard } from "~/components/tweetBox";
 
+
 const theme = createTheme({
   components: {
     MuiButton: {
@@ -32,9 +33,6 @@ const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
 
   api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
-
-  // Start fetching asap
-  api.posts.getAll.useQuery();
 
   const [searchValue, setSearchValue] = useState('');
   const handleClearSearch = () => {

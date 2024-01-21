@@ -8,7 +8,7 @@ import { PageLayout } from "~/components/layout";
 
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { Footer } from "~/components/footer";
-import { SavedActivityFeed } from "~/components/savedActivityFeed";
+import { LikedActivityFeed } from "~/components/likedActivityFeed";
 import { TopBar } from "~/components/topBar";
 import { CreatePostWizard } from "~/components/tweetBox";
 
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
     api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
 
     // Start fetching asap
-    api.posts.getAll.useQuery();
+    // api.posts.getAll.useQuery();
 
     // Return empty div if user isn't loaded
     if (!userLoaded) return <div />;
@@ -51,7 +51,7 @@ const Home: NextPage = () => {
                 </div>
                 <ActivityRequestModal />
                 {/* <Feed /> */}
-                <SavedActivityFeed />
+                <LikedActivityFeed />
                 <div className="flex items-center justify-between text-xl">
                     <Footer />
                 </div>

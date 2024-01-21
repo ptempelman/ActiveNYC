@@ -23,14 +23,17 @@ export const ActivityFeed = ({ selectedCategories, searchValue }: { selectedCate
 
     return (
 
-        <div className="flex h-screen">
-            <div className="flex-1">
+        <div className="flex">
+            <div className="flex-1 overflow-auto">
                 {[...activities].map((activity) => (  // [...data, ...data, ...data, ...data]
                     <ActivityView {...activity} key={activity.id} />
                 ))}
             </div>
-            <div className="flex-1 h-3/4">
-                <GoogleMapComponent activities={activities} />
+            <div className="flex-1">
+                {/* // top-30 right-5 */}
+                <div className="sticky top-10 h-128"> 
+                    <GoogleMapComponent activities={activities} />
+                </div>
             </div>
         </div>
     );

@@ -33,7 +33,7 @@ const Home: NextPage = () => {
     api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
 
     // Start fetching asap
-    api.posts.getAll.useQuery();
+    // api.posts.getAll.useQuery();
 
     if (!id) return <div>404</div>;
 

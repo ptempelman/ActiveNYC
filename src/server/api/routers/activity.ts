@@ -1,12 +1,48 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
-import { ratelimit } from "./posts";
-import { ac } from "@upstash/redis/zmscore-fa7fc9c8";
 
 export const activityRouter = createTRPCRouter({
+
+    createNew: privateProcedure
+        .input(z.object({
+            name: z.string(),
+            address: z.string(),
+            description: z.string(),
+            websiteUrl: z.string(),
+            latitude: z.number(),
+            longitude: z.number(),
+            categories: z.array(z.string()),
+        }))
+        .mutation(async ({ ctx, input }) => {
+
+            const categoryIds = await Promise.all(input.categories.map(async (categoryName) => {
+                const category = await ctx.prisma.category.findUnique({
+                    where: { name: categoryName },
+                });
+                if (!category) {
+                    throw new Error(`Category not found: ${categoryName}`);
+                }
+                return category.id;
+            }));
+
+            const newActivity = await ctx.prisma.activity.create({
+                data: {
+                    name: input.name,
+                    address: input.address,
+                    description: input.description,
+                    websiteUrl: input.websiteUrl,
+                    latitude: input.latitude,
+                    longitude: input.longitude,
+                    categories: {
+                        connect: categoryIds.map((id) => ({ id })),
+                    },
+                },
+            });
+
+            return newActivity;
+        }),
 
     searchActivities: publicProcedure
         .input(z.object({ searchText: z.string(), selectedCategoryIds: z.array(z.string()) }))
