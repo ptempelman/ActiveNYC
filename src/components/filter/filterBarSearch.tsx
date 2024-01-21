@@ -1,12 +1,8 @@
-import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material"
-import { useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
-import { ClassNames } from "@emotion/react";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 
 
-export const FilterBarSearch = ({ searchValue, setSearchValue, handleClearSearch}: { searchValue: string, setSearchValue: (e: string) => void, handleClearSearch: () => void }) => {
+export const FilterBarSearch = ({ searchValue, setSearchValue, handleClearSearch }: { searchValue: string, setSearchValue: (e: string) => void, handleClearSearch: () => void }) => {
 
     return (
         <div className="flex justify-center">

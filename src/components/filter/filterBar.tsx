@@ -1,7 +1,7 @@
-import { FilterBarSearch } from "./filterBarSearch";
-import { FilterBarCategory } from "./filterBarCategory";
-import { ChangeEvent, Dispatch, ReactNode, SetStateAction } from "react";
 import { SelectChangeEvent } from "@mui/material";
+import { Dispatch, ReactNode, SetStateAction } from "react";
+import { FilterBarCategory } from "./filterBarCategory";
+import { FilterBarSearch } from "./filterBarSearch";
 
 
 export const FilterBar = ({ selectedCategories, setSelectedCategories, handleClearCategory, handleChangeCategories, searchValue, setSearchValue, handleClearSearch }: { selectedCategories: string[], setSelectedCategories: Dispatch<SetStateAction<string[]>>, handleClearCategory: () => void, handleChangeCategories: (event: SelectChangeEvent<string[]>, child: ReactNode) => void, searchValue: string, setSearchValue: (e: string) => void, handleClearSearch: () => void }) => {

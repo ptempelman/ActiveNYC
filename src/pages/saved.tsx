@@ -11,7 +11,6 @@ import { Footer } from "~/components/footer";
 import { SavedActivityFeed } from "~/components/savedActivityFeed";
 import { TopBar } from "~/components/topBar";
 import { CreatePostWizard } from "~/components/tweetBox";
-import { Feed } from "~/components/tweetFeed";
 
 const theme = createTheme({
     components: {

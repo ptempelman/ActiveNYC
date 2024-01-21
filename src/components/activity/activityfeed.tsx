@@ -1,18 +1,15 @@
 
-import type { RouterOutputs } from "~/utils/api";
 import { api } from "~/utils/api";
 
-import { useRef, useState } from "react";
 import { ActivityView } from "~/components/activity/activityview";
 import { LoadingPage } from "~/components/loading";
 
-import { GoogleMap, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapComponent } from "../googleMapComponent";
 
 
 export const ActivityFeed = ({ selectedCategories, searchValue }: { selectedCategories: string[], searchValue: string }) => {
     // const { data: activities, isLoading: activitiesLoading } = api.activity.getAll.useQuery();
-    const { data: activities, isLoading: activitiesLoading } = api.activity.searchActivities.useQuery({searchText: searchValue, selectedCategoryIds: selectedCategories});
+    const { data: activities, isLoading: activitiesLoading } = api.activity.searchActivities.useQuery({ searchText: searchValue, selectedCategoryIds: selectedCategories });
 
 
     if (activitiesLoading)

@@ -1,14 +1,8 @@
-import { useUser } from "@clerk/nextjs";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StarIcon from "@mui/icons-material/Star";
-import StarRateIcon from '@mui/icons-material/StarRate';
 import { Backdrop, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
-import { Cross1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
-import CheckIcon from '@mui/icons-material/Check';
-import { RatingComponent } from "./ratingComponent";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handleRateModalClose }:

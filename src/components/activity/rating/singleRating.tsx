@@ -1,17 +1,8 @@
-import { useUser } from "@clerk/nextjs";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import DeleteIcon from '@mui/icons-material/Delete';
 import StarIcon from "@mui/icons-material/Star";
-import StarRateIcon from '@mui/icons-material/StarRate';
-import { Backdrop, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
-import { Cross1Icon } from "@radix-ui/react-icons";
-import { useState } from "react";
-import { api, type RouterOutputs } from "~/utils/api";
-import CheckIcon from '@mui/icons-material/Check';
-import LocalBarIcon from '@mui/icons-material/LocalBar';
+import { Rating } from "@mui/material";
 
 
-export const SingleRating = ({ ratingText, averageRating }: { ratingText: string, averageRating: number | null}) => {
+export const SingleRating = ({ ratingText, averageRating }: { ratingText: string, averageRating: number | null }) => {
     return (
         <div className="bg-gray-600 h-8 rounded-lg flex justify-center items-center mb-1">
             <div className="ml-2 mr-2 h-full w-6/12 border-r border-gray-400 flex items-center justify-center">

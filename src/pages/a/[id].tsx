@@ -6,14 +6,11 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
-import { ActivityFeed } from "~/components/activity/activityfeed";
-import { ActivityRequestModal } from "~/components/activityRequestModal";
-import { CreatePostWizard } from "~/components/tweetBox";
-import { Feed } from "~/components/tweetFeed";
-import { TopBar } from "~/components/topBar";
-import { Footer } from "~/components/footer";
-import { SingleActivity } from "~/components/activity/singleActivity";
 import { useRouter } from "next/router";
+import { SingleActivity } from "~/components/activity/singleActivity";
+import { Footer } from "~/components/footer";
+import { TopBar } from "~/components/topBar";
+import { CreatePostWizard } from "~/components/tweetBox";
 
 const theme = createTheme({
     components: {

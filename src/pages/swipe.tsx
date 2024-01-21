@@ -6,15 +6,14 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
+import { SelectChangeEvent } from "@mui/material";
+import { ReactNode, useState } from "react";
 import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
-import { CreatePostWizard } from "~/components/tweetBox";
-import { TopBar } from "~/components/topBar";
-import { Footer } from "~/components/footer";
 import { FilterBar } from "~/components/filter/filterBar";
-import { ChangeEvent, ReactNode, useState } from "react";
-import { set } from "zod";
-import { SelectChangeEvent } from "@mui/material";
+import { Footer } from "~/components/footer";
+import { TopBar } from "~/components/topBar";
+import { CreatePostWizard } from "~/components/tweetBox";
 
 const theme = createTheme({
     components: {

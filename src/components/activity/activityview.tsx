@@ -1,16 +1,14 @@
 import { useUser } from "@clerk/nextjs";
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import DeleteIcon from '@mui/icons-material/Delete';
-import StarIcon from "@mui/icons-material/Star";
+import CheckIcon from '@mui/icons-material/Check';
 import StarRateIcon from '@mui/icons-material/StarRate';
-import { Backdrop, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
+import { Button } from "@mui/material";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import Link from "next/link";
 import { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
-import CheckIcon from '@mui/icons-material/Check';
-import { RatingComponent } from "./rating/ratingComponent";
 import { RateModal } from "./rating/rateModal";
-import Link from "next/link";
+import { RatingComponent } from "./rating/ratingComponent";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const ActivityView = (activity: Activity) => {
