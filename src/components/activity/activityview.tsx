@@ -53,48 +53,69 @@ export const ActivityView = (activity: Activity) => {
                         ))}
                     </div>
                 </div>
-                <p className="mt-3 text-gray-300">{activity.address}</p>
-                <div className="mt-2 text-gray-300 text-sm">
-                    {activity.websiteUrl && (
-                        <a href={activity.websiteUrl} onClick={(e) => { e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
-                            Visit Website
-                        </a>
-                    )}
-                </div>
-                <div className="mt-2 text-gray-400 text-sm">
-                    <p>{activity.description}</p>
-                </div>
-                <div className="flex justify-between mt-4">
-                    <div className="w-auto">
-                        <RatingComponent {...activity} />
+                <div className="flex">
+                    <div className="w-4/6">
+                        <a
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activity.address)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-blue-300 transition duration-300"
+                            onClick={(e) => { e.stopPropagation() }}
+                        >
+                            {activity.address}
+                        </a>                        
+                        <div className="mb-2 text-gray-400 text-sm mr-2">
+                            <p>{activity.description}</p>
+                        </div>
+                        <RatingComponent activity={activity} handleRateModalOpen={handleRateModalOpen} />
                     </div>
-                    <div className="w-auto">
+                    <div className="w-2/6">
                         {/* Column for Buttons */}
-                        <div className="flex flex-col items-start gap-2 mt-auto">
-                            {isSignedIn && isBookmarked &&
-                                <Button onMouseEnter={() => setIsHovered(true)}
-                                    onMouseLeave={() => setIsHovered(false)} size="large" color="success" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); unbookmark({ userId: user.id, activityId: activity.id }); }} variant="contained" startIcon={isHovered ? <Cross1Icon /> : <CheckIcon />}
-                                    sx={(theme) => ({
-                                        '&:hover': {
-                                            backgroundColor: theme.palette.error.light,
-                                            color: 'white'
-                                        },
-                                    })}>
-                                    {isHovered ? 'Remove' : 'Saved'}
-                                </Button>
-                            }
+                        <div className="relative flex flex-col items-start gap-2 mt-auto h-full">
 
-                            {isSignedIn && !isBookmarked &&
-                                <Button size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); bookmark({ userId: user.id, activityId: activity.id }) }} variant="contained" startIcon={<BookmarkAddIcon />}>
-                                    Save
-                                </Button>
-                            }
-                            {isSignedIn &&
-                                <Button onMouseEnter={() => setRatingIsHovered(true)}
-                                    onMouseLeave={() => setRatingIsHovered(false)} color={isRated ? 'success' : 'primary'} size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalOpen() }} variant="contained" startIcon={isRated ? (ratingIsHovered ? <StarRateIcon /> : <CheckIcon />) : <StarRateIcon />}>
-                                    {isRated ? (ratingIsHovered ? 'Update' : 'Rated') : 'Rate'}
-                                </Button>
-                            }
+                            <div className="absolute top-0 right-0 mt-2 text-gray-300 text-sm">
+                                {activity.websiteUrl && (
+                                    <a href={activity.websiteUrl} onClick={(e) => { e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
+                                        Website
+                                    </a>
+                                )}
+                            </div>
+                            <div className="absolute bottom-0 right-0">
+                                {isSignedIn && isBookmarked &&
+                                    <div className="mb-1">
+                                        <Button onMouseEnter={() => setIsHovered(true)}
+                                            onMouseLeave={() => setIsHovered(false)} size="large" color="success" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); unbookmark({ userId: user.id, activityId: activity.id }); }} variant="contained" startIcon={isHovered ? <Cross1Icon /> : <CheckIcon />}
+                                            sx={(theme) => ({
+                                                '&:hover': {
+                                                    backgroundColor: theme.palette.error.light,
+                                                    color: 'white'
+                                                },
+                                            })}>
+                                            {isHovered ? 'Remove' : 'Saved'}
+                                        </Button>
+                                    </div>
+
+                                }
+
+                                {isSignedIn && !isBookmarked &&
+                                    <div className="mb-1">
+
+                                        <Button size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); bookmark({ userId: user.id, activityId: activity.id }) }} variant="contained" startIcon={<BookmarkAddIcon />}>
+                                            Save
+                                        </Button>
+                                    </div>
+                                }
+                                {isSignedIn &&
+                                    <div className="">
+
+                                        <Button onMouseEnter={() => setRatingIsHovered(true)}
+                                            onMouseLeave={() => setRatingIsHovered(false)} color={isRated ? 'success' : 'primary'} size="large" className="w-full h-9" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRateModalOpen() }} variant="contained" startIcon={isRated ? (ratingIsHovered ? <StarRateIcon /> : <CheckIcon />) : <StarRateIcon />}>
+                                            {isRated ? (ratingIsHovered ? 'Update' : 'Rated') : 'Rate'}
+                                        </Button>
+                                    </div>
+                                }
+                            </div>
+
                         </div>
                     </div>
 

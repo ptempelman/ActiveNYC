@@ -6,7 +6,7 @@ const config = {
       height: {
         '128': '32rem', // 512px
         '144': '36rem', // 576px
-      }
+      },
     },
   },
   plugins: [],

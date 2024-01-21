@@ -1,6 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import StarIcon from "@mui/icons-material/Star";
-import { Backdrop, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
+import { Backdrop, Box, Button, Fade, IconButton, Modal, Rating } from "@mui/material";
 import { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 
@@ -8,21 +8,34 @@ type Activity = RouterOutputs["activity"]["getAll"][number];
 export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handleRateModalClose }:
     { activity: Activity, rateModalOpen: boolean, handleRateModalOpen: () => void, handleRateModalClose: () => void }) => {
 
-    const hasPartyOrBar = activity.categories.some(cat => cat.name === 'Party' || cat.name === 'Bar');
-    const hasNeitherPartyNorBar = activity.categories.every(cat => cat.name !== 'Party' && cat.name !== 'Bar');
-
-    const [rating1, setRating1] = useState(0);
-    const [rating2, setRating2] = useState(0);
-    const [rating3, setRating3] = useState(0);
-    const [rating4, setRating4] = useState(0);
+    const [hover, setHover] = useState(-1);
+    const [rating, setRating] = useState(3);
 
     const ctx = api.useContext();
 
     const { mutate: createRating, isLoading: ratingLoading } = api.rating.create.useMutation({
         onSuccess: () => {
-            void ctx.activity.getAll.refetch();
+            void ctx.activity.searchActivities.refetch();
         }
     });
+
+    const labels: { [index: string]: string } = {
+        0.5: 'Worst ever',
+        1: 'Terrible',
+        1.5: 'Bad',
+        2: 'Not good',
+        2.5: 'Decent',
+        3: 'Good',
+        3.5: 'Great',
+        4: 'Amazing',
+        4.5: 'Perfect',
+        5: 'Best ever',
+    };
+
+    function getLabelText(value: number) {
+        return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+    }
+
 
     return (
         <Modal
@@ -38,76 +51,50 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
         >
             <Fade in={rateModalOpen}>
                 <div className="flex justify-center items-center h-screen w-screen">
-                    <div className="h-auto w-1/4 bg-white rounded-xl z-10">
+                    <div className="h-auto w-1/4 bg-black border rounded-xl z-10">
                         <form className="p-6" onSubmit={(e) => {
                             e.preventDefault();
                             createRating(
                                 {
                                     activityId: activity.id,
-                                    barSpeed: rating1,
-                                    music: rating2,
-                                    worthIt: rating3,
-                                    experience: rating4
+                                    rating: rating,
                                 }
                             )
                         }}
                         >
-                            {hasPartyOrBar && (
-                                <>
-                                    <div>
-                                        <span className="text-gray-600">Bar: </span>
-                                        <Rating name="rating1"
-                                            value={rating1}
-                                            onChange={(event, newValue) => {
-                                                setRating1(newValue ?? 0);
-                                            }}
-                                            icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
-                                            emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
-                                        />
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-600">Music: </span>
-                                        <Rating name="rating2"
-                                            value={rating2}
-                                            onChange={(event, newValue) => {
-                                                setRating2(newValue ?? 0);
-                                            }}
-                                            icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
-                                            emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                            {hasNeitherPartyNorBar && (
-                                <div>
-                                    <span className="text-gray-600">Worth it: </span>
-                                    <Rating name="rating3" value={rating3}
+                            <div className="flex">
+                                <div className="flex-1">
+                                    <Rating
+                                        name="rating"
+                                        value={rating}
                                         onChange={(event, newValue) => {
-                                            setRating3(newValue ?? 0);
+                                            setRating(newValue ?? 0);
+                                        }}
+                                        onChangeActive={(event, newHover) => {
+                                            setHover(newHover);
                                         }}
                                         icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
                                         emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />}
+                                        getLabelText={getLabelText}
+                                        precision={0.5}
                                     />
                                 </div>
-                            )}
-                            <div>
-                                <span className="text-gray-600">Experience: </span>
-                                <Rating name="rating4" value={rating4}
-                                    onChange={(event, newValue) => {
-                                        setRating4(newValue ?? 0);
-                                    }}
-                                    icon={<StarIcon style={{ color: "gold" }} fontSize="inherit" />}
-                                    emptyIcon={<StarIcon style={{ opacity: 1, color: "gray" }} fontSize="inherit" />} />
+                                <div className="flex-1">
+                                    {rating !== null && (
+                                        <Box sx={{ color: 'white', ml: 2 }}>{labels[hover !== -1 ? hover : rating]}</Box>
+                                    )}
+                                </div>
                             </div>
+
                             <div className="mt-4 h-12 flex">
                                 <div className="h-full w-12">
-                                    <IconButton onClick={(e) => { handleRateModalClose() }} size="large" className="h-full w-12">
+                                    <IconButton onClick={(e) => { handleRateModalClose() }} size="large" className="h-full w-12" style={{ color: "white" }}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </div>
                                 <div className="ml-3 w-5/6">
                                     <Button type="submit" onClick={(e) => { handleRateModalClose() }} variant="contained" color="primary" className="w-full m-2 h-full">
-                                        Submit Rating
+                                        Submit
                                     </Button>
                                 </div>
 
@@ -116,6 +103,6 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
                     </div>
                 </div>
             </Fade>
-        </Modal>
+        </Modal >
     )
 }

@@ -1,9 +1,6 @@
-import { clerkClient } from "@clerk/nextjs/server";
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
-import { ratelimit } from "./posts";
+import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 
 export const ratingRouter = createTRPCRouter({
 
@@ -31,10 +28,7 @@ export const ratingRouter = createTRPCRouter({
     create: privateProcedure
         .input(
             z.object({
-                barSpeed: z.number(),
-                music: z.number(),
-                worthIt: z.number(),
-                experience: z.number(),
+                rating: z.number(),
                 activityId: z.string(),
             })
         )
@@ -52,50 +46,27 @@ export const ratingRouter = createTRPCRouter({
                     },
                 },
                 update: {
-                    barSpeed: input.barSpeed,
-                    music: input.music,
-                    worthIt: input.worthIt,
-                    experience: input.experience,
+                    rating: input.rating,
                 },
                 create: {
                     userId: userId,
-                    barSpeed: input.barSpeed,
-                    music: input.music,
-                    worthIt: input.worthIt,
-                    experience: input.experience,
+                    rating: input.rating,
                     activityId: input.activityId,
                 },
             });
 
-            const averageRatingBarSpeed = await ctx.prisma.rating.aggregate({
+            const averageRating = await ctx.prisma.rating.aggregate({
                 where: { activityId: input.activityId },
-                _avg: { barSpeed: true },
+                _avg: { rating: true },
             });
 
-            const averageRatingMusic = await ctx.prisma.rating.aggregate({
-                where: { activityId: input.activityId },
-                _avg: { music: true },
-            });
-
-            const averageRatingWorthIt = await ctx.prisma.rating.aggregate({
-                where: { activityId: input.activityId },
-                _avg: { worthIt: true },
-            });
-
-            const averageRatingExperience = await ctx.prisma.rating.aggregate({
-                where: { activityId: input.activityId },
-                _avg: { experience: true },
-            });
 
             const activityUpdate = await ctx.prisma.activity.update({
                 where: {
                     id: input.activityId,
                 },
                 data: {
-                    averageRatingBarSpeed: averageRatingBarSpeed._avg.barSpeed,
-                    averageRatingMusic: averageRatingMusic._avg.music,
-                    averageRatingWorthIt: averageRatingWorthIt._avg.worthIt,
-                    averageRatingExperience: averageRatingExperience._avg.experience,
+                    averageRating: averageRating._avg.rating,
                 },
             });
 

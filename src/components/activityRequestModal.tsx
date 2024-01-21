@@ -53,12 +53,6 @@ export const ActivityRequestModal = () => {
                                     </div>
                                 ))}
                             </FormGroup>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <TextField label="Avg. Rating Bar" type="number" variant="outlined" />
-                                <TextField label="Avg. Rating Music" type="number" variant="outlined" />
-                                <TextField label="Avg. Rating Worth It" type="number" variant="outlined" />
-                                <TextField label="Avg. Rating Experience" type="number" variant="outlined" />
-                            </div>
                             <Button variant="contained" color="primary" className="w-full mt-6 h-12">
                                 Submit Request
                             </Button>

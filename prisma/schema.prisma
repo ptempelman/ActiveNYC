@@ -30,37 +30,31 @@ model User {
 }
 
 model Activity {
-    id                      String     @id @default(cuid())
-    name                    String
-    address                 String
-    description             String     @db.Text
-    latitude                Float
-    longitude               Float
-    websiteUrl              String?
-    averageRatingBarSpeed   Float?
-    averageRatingMusic      Float?
-    averageRatingWorthIt    Float?
-    averageRatingExperience Float?
-    ratings                 Rating[]
-    categories              Category[] @relation
-    admins                  User[]     @relation("ActivityAdmins")
-    savedByUsers            User[]     @relation("SavedActivities")
+    id            String     @id @default(cuid())
+    name          String
+    address       String
+    description   String     @db.Text
+    latitude      Float
+    longitude     Float
+    websiteUrl    String?
+    averageRating Float?
+    ratings       Rating[]
+    categories    Category[] @relation
+    admins        User[]     @relation("ActivityAdmins")
+    savedByUsers  User[]     @relation("SavedActivities")
 }
 
 model Rating {
     id         String   @id @default(cuid())
-    barSpeed   Float?
-    music      Float?
-    worthIt    Float?
-    experience Float
+    rating     Float
     activityId String
     userId     String
     activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    @@unique([userId, activityId], name: "userId_activityId")
     @@index([activityId])
     @@index([userId])
-    @@unique([userId, activityId], name: "userId_activityId")
 }
 
 model Category {
