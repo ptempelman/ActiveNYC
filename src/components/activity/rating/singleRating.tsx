@@ -13,7 +13,7 @@ import LocalBarIcon from '@mui/icons-material/LocalBar';
 
 export const SingleRating = ({ ratingText, averageRating }: { ratingText: string, averageRating: number | null}) => {
     return (
-        <div className="bg-gray-600 h-8 rounded-lg flex justify-center items-center m-1">
+        <div className="bg-gray-600 h-8 rounded-lg flex justify-center items-center mb-1">
             <div className="ml-2 mr-2 h-full w-6/12 border-r border-gray-400 flex items-center justify-center">
                 {ratingText}
             </div>

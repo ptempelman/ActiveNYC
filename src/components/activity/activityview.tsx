@@ -70,7 +70,7 @@ export const ActivityView = (activity: Activity) => {
                     <div className="w-auto">
                         <RatingComponent {...activity} />
                     </div>
-                    <div className="w-auto m-1">
+                    <div className="w-auto">
                         {/* Column for Buttons */}
                         <div className="flex flex-col items-start gap-2 mt-auto">
                             {isSignedIn && isBookmarked &&
