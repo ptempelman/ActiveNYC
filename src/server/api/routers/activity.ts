@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { ratelimit } from "./posts";
-import { Activity } from "@prisma/client";
 import { ac } from "@upstash/redis/zmscore-fa7fc9c8";
 
 export const activityRouter = createTRPCRouter({
@@ -68,7 +67,10 @@ export const activityRouter = createTRPCRouter({
                 });
 
 
-            type ActivityWithScore = Activity & { score: number };
+            type ActivityWithScore = {
+                activity: typeof activities[0],
+                score: number,
+            }
 
             // Step 2: Calculate scores for each activity
             let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
@@ -81,13 +83,13 @@ export const activityRouter = createTRPCRouter({
                     const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.name));
                     score += matchedCategories.length;
                 }
-                return { ...activity, score };
+                return { activity, score };
             });
 
             // Step 3: Sort activities based on the score
             activitiesWithScores = activitiesWithScores.sort((a, b) => b.score - a.score);
 
-            return activitiesWithScores;
+            return activitiesWithScores.map(activityWithScore => activityWithScore.activity);
         }),
 
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -98,15 +100,6 @@ export const activityRouter = createTRPCRouter({
                 savedByUsers: true,
             }
         });
-
-        if (activities && activities.length > 0) {
-            console.log("Categories of the first activity:", activities[0].categories);
-            // Optionally, log the type of categories and a single entry
-            console.log("Type of categories:", typeof activities[0].categories);
-            if (activities[0].categories.length > 0) {
-                console.log("First category entry:", activities[0].categories[0]);
-            }
-        }
 
         return activities;
     }),
