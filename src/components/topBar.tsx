@@ -1,10 +1,12 @@
+import Link from "next/link";
+
 export const TopBar = () => {
     return (
         <div className="flex items-center gap-4">
-            <a href="/" className="text-gray-0 hover:text-gray-400 transition duration-300">ActiveNYC</a>
-            <a href="/find" className="text-gray-0 hover:text-gray-400 transition duration-300">Find</a>
-            <a href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</a>
-            <a href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</a>
+            <Link href="/" className="text-gray-0 hover:text-gray-400 transition duration-300">ActiveNYC</Link>
+            <Link href="/find" className="text-gray-0 hover:text-gray-400 transition duration-300">Find</Link>
+            <Link href="/swipe" className="text-gray-0 hover:text-gray-400 transition duration-300">Swipe</Link>
+            <Link href="/saved" className="text-gray-0 hover:text-gray-400 transition duration-300">Saved</Link>
             {/* <a onClick={handleOpen} className="text-gray-0 hover:text-gray-400 transition duration-300">Request</a> */}
         </div>
     )

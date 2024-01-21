@@ -19,7 +19,7 @@ export const ActivityView = (activity: Activity) => {
     const [isHovered, setIsHovered] = useState(false);
     const [ratingIsHovered, setRatingIsHovered] = useState(false);
 
-    const [rateModalOpen, openRateModal] = useState<boolean>(false);;
+    const [rateModalOpen, openRateModal] = useState<boolean>(false);
     const handleRateModalOpen = () => openRateModal(true);
     const handleRateModalClose = () => openRateModal(false);
 

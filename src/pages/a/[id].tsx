@@ -28,14 +28,14 @@ const Home: NextPage = () => {
     const router = useRouter();
     const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id
 
-    if (!id) return <div>404</div>;
-
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
 
     api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
 
     // Start fetching asap
     api.posts.getAll.useQuery();
+
+    if (!id) return <div>404</div>;
 
     // Return empty div if user isn't loaded
     if (!userLoaded) return <div />;

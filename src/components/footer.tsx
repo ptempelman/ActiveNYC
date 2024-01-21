@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import Link from 'next/link';
 
 export const Footer = () => {
     return (
@@ -7,7 +8,7 @@ export const Footer = () => {
             <div className="max-w-screen-xl mx-auto px-4">
                 <div className="flex flex-wrap justify-between items-center">
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                        <a href="/" className="text-xl font-bold">ActiveNYC</a>
+                        <Link href="/" className="text-xl font-bold">ActiveNYC</Link>
                         <p className="mt-2 text-gray-400">AI-powered recs</p>
                     </div>
 
@@ -15,16 +16,16 @@ export const Footer = () => {
                         <h5 className="text-lg font-bold mb-4">Quick Links</h5>
                         <ul>
                             <li className="mb-2">
-                                <a href="/about" className="text-gray-400 hover:text-white">About Us</a>
+                                <Link href="/about" className="text-gray-400 hover:text-white">About Us</Link>
                             </li>
                             <li className="mb-2">
-                                <a href="/services" className="text-gray-400 hover:text-white">Services</a>
+                                <Link href="/services" className="text-gray-400 hover:text-white">Services</Link>
                             </li>
                             <li className="mb-2">
-                                <a href="/contact" className="text-gray-400 hover:text-white">Contact Us</a>
+                                <Link href="/contact" className="text-gray-400 hover:text-white">Contact Us</Link>
                             </li>
                             <li className="mb-2">
-                                <a href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</a>
+                                <Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
                             </li>
                         </ul>
                     </div>

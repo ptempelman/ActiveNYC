@@ -6,7 +6,7 @@ import { Backdrop, Button, Fade, FormGroup, Modal, TextField } from "@mui/materi
 
 
 export const ActivityRequestModal = () => {
-    const [requestModalOpen, openRequestModal] = useState<boolean>(false);;
+    const [requestModalOpen, openRequestModal] = useState<boolean>(false);
     const handleOpen = () => openRequestModal(true);
     const handleClose = () => openRequestModal(false);
     const initialCategories = ["Party", "Bar", "Relaxing", "Adventure", "Indoor", "Outdoor", "Sports", "Cultural"].map(() => false);
@@ -48,8 +48,8 @@ export const ActivityRequestModal = () => {
                             {/* <TextField className="w-full mb-4" label="Website URL" variant="outlined" /> */}
                             <FormGroup row className="justify-center">
                                 {["Party", "Relaxing", "Adventure", "Cultural", "Sports", "Bar", "Indoor", "Outdoor"].map((category, index) => (
-                                    <div className="m-1">
-                                        <Button variant={categoriesClicked[index] ? "contained" : "outlined"} className="h-6" key={index} onClick={() => handleCategoryClicked(index)}>{category}</Button>
+                                    <div key={index} className="m-1">
+                                        <Button variant={categoriesClicked[index] ? "contained" : "outlined"} className="h-6" onClick={() => handleCategoryClicked(index)}>{category}</Button>
                                     </div>
                                 ))}
                             </FormGroup>
