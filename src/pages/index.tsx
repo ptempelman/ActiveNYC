@@ -12,8 +12,9 @@ import { CreatePostWizard } from "~/components/tweetBox";
 import { TopBar } from "~/components/topBar";
 import { Footer } from "~/components/footer";
 import { FilterBar } from "~/components/filter/filterBar";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { set } from "zod";
+import { SelectChangeEvent } from "@mui/material";
 
 const theme = createTheme({
   components: {
@@ -44,11 +45,9 @@ const Home: NextPage = () => {
     setSelectedCategories([]);
   }
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const handleChangeCategories = (event: ChangeEvent<{ value: unknown }>) => {
+  const handleChangeCategories = (event: SelectChangeEvent<string[]>, child: ReactNode) => {
     setSelectedCategories(event.target.value as string[]);
   };
-
-  console.log(selectedCategories)
 
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
@@ -69,7 +68,7 @@ const Home: NextPage = () => {
         <FilterBar selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} handleClearCategory={handleClearCategory} handleChangeCategories={handleChangeCategories} searchValue={searchValue} setSearchValue={setSearchValue} handleClearSearch={handleClearSearch} />
         <ActivityRequestModal />
         {/* <Feed /> */}
-        <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} /> 
+        <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} />
         <div className="flex items-center justify-between text-xl">
           <Footer />
         </div>

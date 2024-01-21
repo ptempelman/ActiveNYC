@@ -1,10 +1,10 @@
-import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material"
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material"
+import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-export const FilterBarCategory = ({ selectedCategories, setSelectedCategories, handleClearCategory, handleChangeCategories }: { selectedCategories: string[], setSelectedCategories: Dispatch<SetStateAction<string[]>>, handleClearCategory: () => void, handleChangeCategories: (e: ChangeEvent<{ value: unknown }>) => void }) => {
+export const FilterBarCategory = ({ selectedCategories, setSelectedCategories, handleClearCategory, handleChangeCategories }: { selectedCategories: string[], setSelectedCategories: Dispatch<SetStateAction<string[]>>, handleClearCategory: () => void, handleChangeCategories: (event: SelectChangeEvent<string[]>, child: ReactNode) => void }) => {
 
     function CustomSelectIcon({ open }: { open: boolean }) {
         return open ?
