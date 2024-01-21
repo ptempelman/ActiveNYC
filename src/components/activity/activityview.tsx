@@ -10,6 +10,7 @@ import { api, type RouterOutputs } from "~/utils/api";
 import CheckIcon from '@mui/icons-material/Check';
 import { RatingComponent } from "./ratingComponent";
 import { RateModal } from "./rateModal";
+import Link from "next/link";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const ActivityView = (activity: Activity) => {
@@ -42,7 +43,7 @@ export const ActivityView = (activity: Activity) => {
 
     return (
         <div className="border border-gray-200 rounded-lg shadow-md m-4 p-4 w-10/12 mx-auto bg-gray-800 text-white">
-            <a href={`/a/${activity.id}`}>
+            <Link href={`/a/${activity.id}`}>
 
                 <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold">{activity.name}</h3>
@@ -57,7 +58,7 @@ export const ActivityView = (activity: Activity) => {
                 <p className="text-gray-300">{activity.address}</p>
                 <div className="mt-2 text-gray-400 text-sm">
                     {activity.websiteUrl && (
-                        <a href={activity.websiteUrl} onClick={(e) => { e.preventDefault(); e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
+                        <a href={activity.websiteUrl} onClick={(e) => { e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
                             Visit Website
                         </a>
                     )}
@@ -96,7 +97,7 @@ export const ActivityView = (activity: Activity) => {
                     </div>
                 </div>
                 <RateModal {...{ activity, rateModalOpen, handleRateModalOpen, handleRateModalClose }} />
-            </a>
+            </Link>
         </div >
     );
 };

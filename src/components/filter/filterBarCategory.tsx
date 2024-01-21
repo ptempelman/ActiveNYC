@@ -1,10 +1,8 @@
 import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import { ChangeEvent, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
-import { ClassNames } from "@emotion/react";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { FilterBarSearch } from "./filterBarSearch";
 
 export const FilterBarCategory = () => {
 
@@ -20,14 +18,14 @@ export const FilterBarCategory = () => {
     }
 
     const handleClearCategory = () => {
-        setSelectedValues([]);
+        setSelectedCategories([]);
     }
 
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
+    const [selectedValues, setSelectedCategories] = useState<string[]>([]);
     const [open, setOpen] = useState<boolean>(false);
 
     const handleChange = (event: ChangeEvent<{ value: unknown }>) => {
-        setSelectedValues(event.target.value as string[]);
+        setSelectedCategories(event.target.value as string[]);
     };
 
     const handleOpen = () => {

@@ -1,12 +1,14 @@
 
+import dayjs from 'dayjs';
+
 export const Footer = () => {
     return (
         <footer className="w-screen bg-gray-900 text-white py-8">
             <div className="max-w-screen-xl mx-auto px-4">
                 <div className="flex flex-wrap justify-between items-center">
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                        <a href="/" className="text-xl font-bold">Your Brand</a>
-                        <p className="mt-2 text-gray-400">Creating a better tomorrow, one step at a time.</p>
+                        <a href="/" className="text-xl font-bold">ActiveNYC</a>
+                        <p className="mt-2 text-gray-400">AI-powered recs</p>
                     </div>
 
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
@@ -39,7 +41,7 @@ export const Footer = () => {
                 </div>
 
                 <div className="text-center text-gray-400 mt-10">
-                    <p>&copy; {new Date().getFullYear()} Your Brand. All rights reserved.</p>
+                    <p>&copy; {dayjs().year()} ActiveNYC. All rights reserved.</p>
                 </div>
             </div>
         </footer>
