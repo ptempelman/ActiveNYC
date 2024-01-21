@@ -4,8 +4,53 @@ import { z } from "zod";
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { ratelimit } from "./posts";
+import { Activity } from "@prisma/client";
 
 export const activityRouter = createTRPCRouter({
+
+    searchActivities: publicProcedure
+        .input(z.object({ searchText: z.string(), selectedCategoryIds: z.array(z.string()) }))
+        .query(async ({ ctx, input }) => {
+            const { searchText, selectedCategoryIds } = input;
+
+            let activities = await ctx.prisma.activity.findMany({
+                where: {
+                    OR: searchText ? [
+                        { name: { contains: searchText } },
+                        { description: { contains: searchText } },
+                    ] : undefined,
+                    AND: selectedCategoryIds.length > 0 ? selectedCategoryIds.map(id => ({
+                        categories: {
+                            some: { id }
+                        }
+                    })) : undefined
+                },
+                include: {
+                    categories: true,
+                }
+            });
+
+            type ActivityWithScore = Activity & { score: number };
+
+            // Step 2: Calculate scores for each activity
+            let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
+                let score = 0;
+                if (searchText) {
+                    if (activity.name.includes(searchText)) score += 1;
+                    if (activity.description.includes(searchText)) score += 1;
+                }
+                if (selectedCategoryIds.length > 0) {
+                    const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.id));
+                    score += matchedCategories.length;
+                }
+                return { ...activity, score };
+            });
+
+            // Step 3: Sort activities based on the score
+            activitiesWithScores.sort((a, b) => b.score - a.score);
+
+            return activities;
+        }),
 
     getAll: publicProcedure.query(async ({ ctx }) => {
         const activities = await ctx.prisma.activity.findMany({
