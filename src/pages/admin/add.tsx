@@ -6,8 +6,8 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
-import { SelectChangeEvent, Snackbar } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { Snackbar } from "@mui/material";
+import { useState } from "react";
 import { AdminBar } from "~/components/adminBar";
 import { Footer } from "~/components/footer";
 import { TopBar } from "~/components/topBar";
@@ -224,7 +224,8 @@ const Home: NextPage = () => {
                 </div>
                 <div className="flex justify-center">
                     <div className="rounded-xl z-10">
-                        <form className="mx-auto my-10 p-6 shadow-md rounded" onSubmit={handleSubmit}>
+                        <form className="mx-auto my-10 p-6 shadow-md rounded"
+                            onSubmit={(event) => { void handleSubmit(event) }}>
                             <h2 className="text-2xl font-bold mb-6 text-gray-200">Add New Activity</h2>
                             <div className="mb-2">
                                 <TextField className="w-full" label="Name"

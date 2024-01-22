@@ -34,7 +34,9 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
     };
 
     function getLabelText(value: number) {
-        return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+        // Assuming labels is an array or object with string values
+        const label = labels[value] || 'Rate'; // Replace 'default label' with an appropriate fallback
+        return `${value} Star${value !== 1 ? 's' : ''}, ${label}`;
     }
 
 

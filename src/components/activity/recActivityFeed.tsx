@@ -15,8 +15,8 @@ export const RecActivityFeed = ({ selectedCategories, searchValue }: { selectedC
 
 
     const { mutate: createLike, isLoading: likeLoading } = api.like.createLikeDislike.useMutation({
-        onSuccess: () => {
-        }
+        // onSuccess: () => {
+        // }
     });
 
     if (activitiesLoading)
