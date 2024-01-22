@@ -44,6 +44,104 @@ export const activityRouter = createTRPCRouter({
             return newActivity;
         }),
 
+    searchActivitiesPreferNonLiked: publicProcedure
+        .input(z.object({ userId: z.string().nullish(), searchText: z.string(), selectedCategoryIds: z.array(z.string()) }))
+        .query(async ({ ctx, input }) => {
+            const { userId, searchText, selectedCategoryIds } = input;
+
+            if (!userId) {
+                throw new Error("NO USER ID");
+            }
+
+            let where = undefined;
+
+            // Check if searchText is not empty, and build the searchText condition
+            if (searchText) {
+                where = {
+                    OR: [
+                        { name: { contains: searchText } },
+                        { description: { contains: searchText } },
+                    ]
+                };
+            }
+
+            // Check if selectedCategoryIds is not empty, and build the category name conditions
+            if (selectedCategoryIds.length > 0) {
+                const categoryConditions = selectedCategoryIds.map(name => ({
+                    categories: {
+                        some: { name }
+                    }
+                }));
+
+                // If where is undefined, set it to the categoryConditions
+                if (!where) {
+                    where = {
+                        OR: categoryConditions
+                    };
+                } else {
+                    // Combine searchText condition with categoryConditions using OR
+                    where = {
+                        OR: [
+                            where,
+                            ...categoryConditions
+                        ]
+                    };
+                }
+            }
+
+            // Conditionally apply the where condition only when where is defined
+            const activities = where
+                ? await ctx.prisma.activity.findMany({
+                    where,
+                    include: {
+                        categories: true,
+                        savedByUsers: true,
+                        likes: { // Include likes to check if the user has liked the activity
+                            where: { userId: userId },
+                        },
+                    },
+                })
+                : await ctx.prisma.activity.findMany({
+                    include: {
+                        categories: true,
+                        savedByUsers: true,
+                        likes: { // Include likes to check if the user has liked the activity
+                            where: { userId: userId },
+                        },
+                    },
+                });
+
+
+            type ActivityWithScore = {
+                activity: typeof activities[0],
+                score: number,
+            }
+
+            // Step 2: Calculate scores for each activity
+            let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
+                let score = 0;
+                if (searchText) {
+                    if (activity.name.toLowerCase().includes(searchText)) score += 3;
+                    if (activity.description.toLowerCase().includes(searchText)) score += 2;
+                }
+                if (selectedCategoryIds.length > 0) {
+                    const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.name));
+                    score += matchedCategories.length;
+                }
+
+                const userHasLiked = activity.likes.length > 0;
+                if (!userHasLiked) {
+                    score += 5;
+                }
+                return { activity, score };
+            });
+
+            // Step 3: Sort activities based on the score
+            activitiesWithScores = activitiesWithScores.sort((a, b) => b.score - a.score);
+
+            return activitiesWithScores.map(activityWithScore => activityWithScore.activity);
+        }),
+
     searchActivities: publicProcedure
         .input(z.object({ searchText: z.string(), selectedCategoryIds: z.array(z.string()) }))
         .query(async ({ ctx, input }) => {

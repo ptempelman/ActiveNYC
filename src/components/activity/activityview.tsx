@@ -73,7 +73,7 @@ export const ActivityView = (activity: Activity) => {
                         {/* Column for Buttons */}
                         <div className="relative flex flex-col items-start gap-2 mt-auto h-full">
 
-                            <div className="absolute top-0 right-0 mt-2 text-gray-300 text-sm">
+                            <div className="absolute top-0 right-0 mt-2 text-gray-300 text-sm mr-1">
                                 {activity.websiteUrl && (
                                     <a href={activity.websiteUrl} onClick={(e) => { e.stopPropagation() }} className="text-blue-400 hover:text-blue-300 transition duration-300">
                                         Website

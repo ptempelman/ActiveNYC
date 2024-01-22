@@ -11,7 +11,6 @@ export const ActivityFeed = ({ selectedCategories, searchValue }: { selectedCate
     // const { data: activities, isLoading: activitiesLoading } = api.activity.getAll.useQuery();
     const { data: activities, isLoading: activitiesLoading } = api.activity.searchActivities.useQuery({ searchText: searchValue, selectedCategoryIds: selectedCategories });
 
-
     if (activitiesLoading)
         return (
             <div className="flex grow">

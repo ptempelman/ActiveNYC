@@ -27,6 +27,7 @@ model User {
     adminOf         Activity[] @relation("ActivityAdmins")
     ratings         Rating[]
     savedActivities Activity[] @relation("SavedActivities")
+    likes           Like[]
 }
 
 model Activity {
@@ -42,19 +43,33 @@ model Activity {
     categories    Category[] @relation
     admins        User[]     @relation("ActivityAdmins")
     savedByUsers  User[]     @relation("SavedActivities")
+    likes         Like[]
 }
 
 model Rating {
-    id         String   @id @default(cuid())
+    id         String    @id @default(cuid())
     rating     Float
     activityId String
     userId     String
-    activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    activity   Activity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
+    user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([userId, activityId], name: "userId_activityId")
     @@index([activityId])
     @@index([userId])
+}
+
+model Like {
+    id         String    @id @default(cuid())
+    userId     String
+    activityId String
+    liked      Boolean // False for dislike
+    user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    activity   Activity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, activityId], name: "userActivity_unique")
+    @@index([userId])
+    @@index([activityId])
 }
 
 model Category {

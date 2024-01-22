@@ -8,12 +8,13 @@ import { PageLayout } from "~/components/layout";
 
 import { SelectChangeEvent } from "@mui/material";
 import { ReactNode, useState } from "react";
-import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { FilterBar } from "~/components/filter/filterBar";
 import { Footer } from "~/components/footer";
 import { TopBar } from "~/components/topBar";
 import { CreatePostWizard } from "~/components/tweetBox";
+import { RecActivityFeed } from "~/components/activity/recActivityFeed";
+
 
 const theme = createTheme({
     components: {
@@ -32,9 +33,6 @@ const Home: NextPage = () => {
 
     api.signin.createUser.useQuery({ id: user?.id, email: user?.primaryEmailAddress?.emailAddress ?? null });
 
-    // Start fetching asap
-    // api.posts.getAll.useQuery();
-
     const [searchValue, setSearchValue] = useState('');
     const handleClearSearch = () => {
         setSearchValue('');
@@ -48,11 +46,15 @@ const Home: NextPage = () => {
         setSelectedCategories(event.target.value as string[]);
     };
 
+    const isAdminUser = api.profile.isAdminUser.useQuery({ userId: user?.id }).data?.isAdmin;
+    console.log(isAdminUser)
+
     // Return empty div if user isn't loaded
     if (!userLoaded) return <div />;
     return (
         <ThemeProvider theme={theme}>
             <PageLayout>
+
                 <div className="flex items-center justify-between border-b border-slate-400 p-4">
                     <TopBar />
                     <div>
@@ -66,8 +68,9 @@ const Home: NextPage = () => {
                 </div>
                 <FilterBar selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} handleClearCategory={handleClearCategory} handleChangeCategories={handleChangeCategories} searchValue={searchValue} setSearchValue={setSearchValue} handleClearSearch={handleClearSearch} />
                 <ActivityRequestModal />
+                <RecActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} />
                 {/* <Feed /> */}
-                <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} />
+                {/* <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} /> */}
                 <div className="flex items-center justify-between text-xl">
                     <Footer />
                 </div>

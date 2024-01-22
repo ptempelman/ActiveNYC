@@ -16,6 +16,7 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
     const { mutate: createRating, isLoading: ratingLoading } = api.rating.create.useMutation({
         onSuccess: () => {
             void ctx.activity.searchActivities.refetch();
+            void ctx.activity.getById.refetch();
         }
     });
 

@@ -4,13 +4,14 @@ import type { RouterOutputs } from "~/utils/api";
 import { useRef, useState } from "react";
 
 import { GoogleMap, InfoWindowF, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import Link from "next/link";
 
 type Activity = RouterOutputs["activity"]["getAll"][number];
 export const GoogleMapComponent = ({ activities }: { activities: Activity[] }) => {
 
     const containerStyle = {
         width: '100%',
-        height: '100%'
+        height: '100%',
     };
 
     const { isLoaded: mapLoaded } = useJsApiLoader({
@@ -30,7 +31,7 @@ export const GoogleMapComponent = ({ activities }: { activities: Activity[] }) =
     const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
 
     return (
-        <div className="border border-gray-200 m-5 w-100% h-full">
+        <div className="m-5 w-100% h-full">
             {!mapLoaded && <div>Loading...</div>}
             {mapLoaded &&
                 <GoogleMap
@@ -71,8 +72,10 @@ export const GoogleMapComponent = ({ activities }: { activities: Activity[] }) =
                             onCloseClick={() => setSelectedPlace(undefined)}
                         >
                             <div>
-                                <h3 className="text-black">{selectedPlace.name}</h3>
-                                <p className="text-black">{selectedPlace.address}</p>
+                                <Link href={`/a/${selectedPlace.id}`}>
+                                    <h3 className="text-black">{selectedPlace.name}</h3>
+                                    <p className="text-black">{selectedPlace.address}</p>
+                                </Link>
                             </div>
                         </InfoWindowF>
                     )}
