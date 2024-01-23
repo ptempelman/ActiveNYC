@@ -8,7 +8,7 @@ export const Footer = () => {
             <div className="max-w-screen-xl mx-auto px-4">
                 <div className="flex flex-wrap justify-between items-center">
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                        <Link href="/" className="text-xl font-bold">ActiveNYC</Link>
+                        <Link href="/" className="text-xl font-bold">AIRecs</Link>
                         <p className="mt-2 text-gray-400">AI-powered recs</p>
                     </div>
 
@@ -42,7 +42,7 @@ export const Footer = () => {
                 </div>
 
                 <div className="text-center text-gray-400 mt-10">
-                    <p>&copy; {dayjs().year()} ActiveNYC. All rights reserved.</p>
+                    <p>&copy; {dayjs().year()} AIRecs. All rights reserved.</p>
                 </div>
             </div>
         </footer>
