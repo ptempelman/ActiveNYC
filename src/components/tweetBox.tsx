@@ -2,9 +2,9 @@ import { UserButton, useUser } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 
+import { Box, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { LoadingSpinner } from "~/components/loading";
 
 
 
@@ -30,10 +30,72 @@ export const CreatePostWizard = () => {
         },
     });
 
+    const cirlceSize = 56;
+
+    const [popupText, setPopupText] = useState('');
+    const [popupOpen, openPopup] = useState(false);
+    const handleOpenPopup = (text: string) => {
+        setPopupText(text);
+        openPopup(true);
+    };
+    const handleClosePopup = (event: React.SyntheticEvent | Event, reason?: string) => {
+        // if (reason === 'clickaway') {
+        //     return;
+        // }
+
+        openPopup(false);
+    };
+
+
     if (!user) return null;
+
+    // TODO: merge this into one api call so we can easily make it refetch when interactions are done
+    const interactionCount = api.activity.getInteractionCount.useQuery({ userId: user.id }).data?.interactionCount ?? 0;
+    const interactionThreshold = api.profile.getNextInteractionThreshold.useQuery({ userId: user.id }).data?.threshold ?? 2;
+    const props = {
+        value: (interactionCount / interactionThreshold) * 100
+    }
 
     return (
         <div className="flex w-full gap-3">
+
+            <div className="flex items-center">
+                <Button onClick={() => handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')} className="h-8 w-32" variant="contained" sx={{
+                    backgroundColor: '#474747', // Set the background color to white
+                    '&:hover': {
+                        backgroundColor: 'white', // Optional: Change background color slightly on hover
+                        color: 'black',
+                    }
+                }}
+                >Retrain AI</Button>
+
+            </div>
+
+
+            <Box sx={{ position: 'relative', display: 'inline-flex' }} onClick={() => handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')}>
+                <CircularProgress size={cirlceSize} variant="determinate" {...props} sx={{ color: 'white' }} />
+                <Box
+                    sx={{
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        position: 'absolute',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 56,
+                        height: 56,
+                    }}
+                >
+                    <Typography
+                        variant="caption"
+                        component="div"
+                        sx={{ color: 'white' }}
+                    >{`${Math.round(props.value)}%`}</Typography>
+                </Box>
+            </Box>
+
             <UserButton appearance={{
                 elements: {
                     userButtonAvatarBox: {
@@ -66,6 +128,13 @@ export const CreatePostWizard = () => {
                     <LoadingSpinner size={20} />
                 </div>
             )} */}
+            <Snackbar
+                open={popupOpen}
+                autoHideDuration={6000}
+                onClose={handleClosePopup}
+                message={popupText}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            />
         </div>
     );
 };

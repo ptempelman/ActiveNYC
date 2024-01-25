@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
-import { SelectChangeEvent } from "@mui/material";
+import { Button, SelectChangeEvent } from "@mui/material";
 import { ReactNode, useState } from "react";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { FilterBar } from "~/components/filter/filterBar";
@@ -71,6 +71,8 @@ const Home: NextPage = () => {
                 <RecActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} />
                 {/* <Feed /> */}
                 {/* <ActivityFeed selectedCategories={selectedCategories} searchValue={searchValue} /> */}
+
+                
                 <div className="flex items-center justify-between text-xl">
                     <Footer />
                 </div>

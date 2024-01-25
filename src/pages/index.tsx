@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
-import { SelectChangeEvent } from "@mui/material";
+import { Button, SelectChangeEvent, Snackbar } from "@mui/material";
 import { ReactNode, useState } from "react";
 import { ActivityFeed } from "~/components/activity/activityfeed";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
@@ -50,6 +50,7 @@ const Home: NextPage = () => {
   const isAdminUser = api.profile.isAdminUser.useQuery({ userId: user?.id }).data?.isAdmin;
   console.log(isAdminUser)
 
+  
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />;
   return (

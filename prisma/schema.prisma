@@ -19,15 +19,16 @@ model Post {
 }
 
 model User {
-    id              String     @id @default(cuid())
-    email           String     @unique
-    age             Int?
-    dateCreated     DateTime   @default(now())
-    role            String     @default("user")
-    adminOf         Activity[] @relation("ActivityAdmins")
-    ratings         Rating[]
-    savedActivities Activity[] @relation("SavedActivities")
-    likes           Like[]
+    id                       String     @id @default(cuid())
+    email                    String     @unique
+    age                      Int?
+    dateCreated              DateTime   @default(now())
+    role                     String     @default("user")
+    nextInteractionThreshold Int        @default(10)
+    adminOf                  Activity[] @relation("ActivityAdmins")
+    ratings                  Rating[]
+    savedActivities          Activity[] @relation("SavedActivities")
+    likes                    Like[]
 }
 
 model Activity {
@@ -38,6 +39,7 @@ model Activity {
     latitude      Float
     longitude     Float
     websiteUrl    String?
+    published     Boolean    @default(false)
     averageRating Float?
     ratings       Rating[]
     categories    Category[] @relation

@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
 
+import { Button } from "@mui/material";
 import { ActivityRequestModal } from "~/components/activityRequestModal";
 import { Footer } from "~/components/footer";
 import { LikedActivityFeed } from "~/components/likedActivityFeed";
@@ -50,6 +51,7 @@ const Home: NextPage = () => {
                     </div>
                 </div>
                 <ActivityRequestModal />
+
                 {/* <Feed /> */}
                 <LikedActivityFeed />
                 <div className="flex items-center justify-between text-xl">

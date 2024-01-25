@@ -54,6 +54,17 @@ export const RecActivityFeed = ({ selectedCategories, searchValue }: { selectedC
                 <div className="w-1/12"></div>
                 <Button variant="contained" color="success" className="w-1/6 h-full" onClick={() => handleNextActivity(true)}>Like</Button>
             </div>
+            <div className="h-24">
+                <div className="h-12"></div>
+                <Button href='/saved' className="h-8 w-32" variant="contained" sx={{
+                    backgroundColor: '#474747', // Set the background color to white
+                    '&:hover': {
+                        backgroundColor: 'white', // Optional: Change background color slightly on hover
+                        color: 'black',
+                    }
+                }}
+                >Retrain</Button>
+            </div>
         </div>
     );
 }

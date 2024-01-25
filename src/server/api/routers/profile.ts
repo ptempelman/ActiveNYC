@@ -7,6 +7,24 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/ap
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 export const profileRouter = createTRPCRouter({
+
+  getNextInteractionThreshold: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "User not found",
+        });
+      }
+
+      return { threshold: user.nextInteractionThreshold };
+    }),
+
   getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {

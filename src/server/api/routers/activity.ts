@@ -1,9 +1,37 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { InvokeEndpointCommand, SageMakerRuntimeClient } from "@aws-sdk/client-sagemaker-runtime";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const activityRouter = createTRPCRouter({
+
+    getInteractionCount: publicProcedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const { userId } = input;
+
+            const likes = await ctx.prisma.like.count({
+                where: {
+                    userId: userId,
+                },
+            });
+
+            const saves = await ctx.prisma.savedActivities.count({
+                where: {
+                    A: userId,
+                },
+            });
+
+            const ratings = await ctx.prisma.rating.count({
+                where: {
+                    userId: userId,
+                },
+            });
+
+            return { interactionCount: likes + saves + ratings }
+
+        }),
 
     createNew: privateProcedure
         .input(z.object({
@@ -44,7 +72,7 @@ export const activityRouter = createTRPCRouter({
             return newActivity;
         }),
 
-    searchActivitiesPreferNonLiked: publicProcedure
+    searchActivitiesPreferNonLiked: privateProcedure
         .input(z.object({ userId: z.string().nullish(), searchText: z.string(), selectedCategoryIds: z.array(z.string()) }))
         .query(async ({ ctx, input }) => {
             const { userId, searchText, selectedCategoryIds } = input;
@@ -112,29 +140,70 @@ export const activityRouter = createTRPCRouter({
                 });
 
 
+
+            // TODO: Base score on ML model calls
+            const client = new SageMakerRuntimeClient({});
+
+            const data = {
+                userId: userId,
+                activityIds: activities.map(activity => activity.id),
+            };
+
+            // Convert the data to JSON
+            const payload = JSON.stringify(data);
+            let result = null;
+
+            const command = new InvokeEndpointCommand({
+                EndpointName: 'sagemaker-scikit-learn-2024-01-25-15-53-06-786',
+                ContentType: 'application/json',
+                Body: payload
+            });
+
+            try {
+                const response = await client.send(command);
+
+                // Assuming the response is in JSON format
+                result = JSON.parse(new TextDecoder("utf-8").decode(response.Body));
+                console.log(result);
+            } catch (error) {
+                console.error("Error invoking SageMaker endpoint:", error);
+                throw new Error('Error invoking SageMaker endpoint:');
+            }
+
             type ActivityWithScore = {
                 activity: typeof activities[0],
                 score: number,
             }
 
-            // Step 2: Calculate scores for each activity
             let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
-                let score = 0;
-                if (searchText) {
-                    if (activity.name.toLowerCase().includes(searchText)) score += 3;
-                    if (activity.description.toLowerCase().includes(searchText)) score += 2;
-                }
-                if (selectedCategoryIds.length > 0) {
-                    const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.name));
-                    score += matchedCategories.length;
-                }
+                const score = result[activity.id];
+                return {
+                    activity,
+                    score: score !== undefined ? score : null, // or a default score if not found
+                };
+            }); // .filter(activityWithScore => activityWithScore.score !== null);
 
-                const userHasLiked = activity.likes.length > 0;
-                if (!userHasLiked) {
-                    score += 5;
-                }
-                return { activity, score };
-            });
+
+
+
+            // Step 2: Calculate scores for each activity
+            // let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
+            //     let score = 0;
+            //     if (searchText) {
+            //         if (activity.name.toLowerCase().includes(searchText)) score += 3;
+            //         if (activity.description.toLowerCase().includes(searchText)) score += 2;
+            //     }
+            //     if (selectedCategoryIds.length > 0) {
+            //         const matchedCategories = activity.categories.filter(cat => selectedCategoryIds.includes(cat.name));
+            //         score += matchedCategories.length;
+            //     }
+
+            //     const userHasLiked = activity.likes.length > 0;
+            //     if (!userHasLiked) {
+            //         score += 5;
+            //     }
+            //     return { activity, score };
+            // });
 
             // Step 3: Sort activities based on the score
             activitiesWithScores = activitiesWithScores.sort((a, b) => b.score - a.score);
