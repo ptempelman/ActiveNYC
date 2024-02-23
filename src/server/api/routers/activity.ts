@@ -167,7 +167,7 @@ export const activityRouter = createTRPCRouter({
                 const response = await client.send(command);
 
                 // Assuming the response is in JSON format
-                result = JSON.parse(new TextDecoder("utf-8").decode(response.Body));
+                result = JSON.parse(new TextDecoder("utf-8").decode(response.Body)) as ResultType;
                 // console.log(result);
             } catch (error) {
                 console.error("Error invoking SageMaker endpoint:", error);
