@@ -151,7 +151,11 @@ export const activityRouter = createTRPCRouter({
 
             // Convert the data to JSON
             const payload = JSON.stringify(data);
-            let result = null;
+            interface ResultType {
+                [key: string]: number;
+            }
+
+            let result: ResultType | null = null;
 
             const command = new InvokeEndpointCommand({
                 EndpointName: 'sagemaker-scikit-learn-2024-01-25-15-53-06-786',
@@ -164,7 +168,7 @@ export const activityRouter = createTRPCRouter({
 
                 // Assuming the response is in JSON format
                 result = JSON.parse(new TextDecoder("utf-8").decode(response.Body));
-                console.log(result);
+                // console.log(result);
             } catch (error) {
                 console.error("Error invoking SageMaker endpoint:", error);
                 throw new Error('Error invoking SageMaker endpoint:');
@@ -172,19 +176,16 @@ export const activityRouter = createTRPCRouter({
 
             type ActivityWithScore = {
                 activity: typeof activities[0],
-                score: number,
+                score: number | null,
             }
 
             let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
-                const score = result[activity.id];
+                const score = result ? result[activity.id] : null;
                 return {
                     activity,
                     score: score !== undefined ? score : null, // or a default score if not found
                 };
             }); // .filter(activityWithScore => activityWithScore.score !== null);
-
-
-
 
             // Step 2: Calculate scores for each activity
             // let activitiesWithScores: ActivityWithScore[] = activities.map(activity => {
@@ -206,7 +207,12 @@ export const activityRouter = createTRPCRouter({
             // });
 
             // Step 3: Sort activities based on the score
-            activitiesWithScores = activitiesWithScores.sort((a, b) => b.score - a.score);
+            activitiesWithScores = activitiesWithScores.sort((a, b) => {
+                if (a.score === null && b.score === null) return 0;
+                if (a.score === null) return 1;
+                if (b.score === null) return -1;
+                return b.score - a.score;
+            });
 
             return activitiesWithScores.map(activityWithScore => activityWithScore.activity);
         }),
