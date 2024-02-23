@@ -26,13 +26,13 @@ export const FilterBar = ({ selectedCategories, setSelectedCategories, handleCle
 
     const [selectedCity, setSelectedCity] = useState<string>('');
     const handleChangeCity = (event: SelectChangeEvent<string>, child: ReactNode) => {
-        setSelectedCity(event.target.value as string);
+        setSelectedCity(event.target.value);
     };
 
-    const handleClearCity = () => { 
+    const handleClearCity = () => {
         setSelectedCity('');
     }
-    
+
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => {
         setOpen(true);
