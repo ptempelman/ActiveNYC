@@ -26,7 +26,7 @@ export const RecActivityFeed = ({ selectedCategories, searchValue }: { selectedC
             </div>
         );
 
-    if (!activities || currentIndex >= activities.length) return <div>Something went wrong</div>;
+    if (!activities || currentIndex >= activities.length) return <div className="h-12">Something went wrong (most likely the AWS Sagemaker instance is turned off to prevent costs)</div>;
 
     const handleNextActivity = (liked: boolean) => {
 
