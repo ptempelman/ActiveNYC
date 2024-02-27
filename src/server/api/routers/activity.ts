@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { InvokeEndpointCommand, SageMakerRuntimeClient } from "@aws-sdk/client-sagemaker-runtime";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const activityRouter = createTRPCRouter({
@@ -141,37 +140,74 @@ export const activityRouter = createTRPCRouter({
 
 
 
-            // TODO: Base score on ML model calls
-            const client = new SageMakerRuntimeClient({});
+            // // TODO: Base score on ML model calls
+            // const client = new SageMakerRuntimeClient({});
+
+            // const data = {
+            //     userId: userId,
+            //     activityIds: activities.map(activity => activity.id),
+            // };
+
+            // // Convert the data to JSON
+            // const payload = JSON.stringify(data);
+            // interface ResultType {
+            //     [key: string]: number;
+            // }
+
+            // let result: ResultType | null = null;
+
+            // const command = new InvokeEndpointCommand({
+            //     EndpointName: 'sagemaker-scikit-learn-2024-01-25-15-53-06-786',
+            //     ContentType: 'application/json',
+            //     Body: payload
+            // });
+
+            // try {
+            //     const response = await client.send(command);
+
+            //     // Assuming the response is in JSON format
+            //     result = JSON.parse(new TextDecoder("utf-8").decode(response.Body)) as ResultType;
+            //     // console.log(result);
+            // } catch (error) {
+            //     console.error("Error invoking SageMaker endpoint:", error);
+            //     throw new Error('Error invoking SageMaker endpoint:');
+            // }
 
             const data = {
                 userId: userId,
                 activityIds: activities.map(activity => activity.id),
             };
 
-            // Convert the data to JSON
+            const url = process.env.ML_API_ENDPOINT + "/predict";
+            if (!url) {
+                throw new Error("ML_API_ENDPOINT not found");
+            }
             const payload = JSON.stringify(data);
+
             interface ResultType {
                 [key: string]: number;
             }
 
             let result: ResultType | null = null;
 
-            const command = new InvokeEndpointCommand({
-                EndpointName: 'sagemaker-scikit-learn-2024-01-25-15-53-06-786',
-                ContentType: 'application/json',
-                Body: payload
-            });
-
             try {
-                const response = await client.send(command);
+                const response = await fetch(url, {
+                    method: 'POST', // Using POST as per the adjusted FastAPI endpoint
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: payload,
+                });
 
-                // Assuming the response is in JSON format
-                result = JSON.parse(new TextDecoder("utf-8").decode(response.Body)) as ResultType;
-                // console.log(result);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseJson = await response.json();
+                result = responseJson as ResultType;
             } catch (error) {
-                console.error("Error invoking SageMaker endpoint:", error);
-                throw new Error('Error invoking SageMaker endpoint:');
+                console.error("Error calling FastAPI endpoint:", error);
+                throw new Error('Error calling FastAPI endpoint:');
             }
 
             type ActivityWithScore = {

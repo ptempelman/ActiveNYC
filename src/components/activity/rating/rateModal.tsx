@@ -17,6 +17,7 @@ export const RateModal = ({ activity, rateModalOpen, handleRateModalOpen, handle
         onSuccess: () => {
             void ctx.activity.searchActivities.refetch();
             void ctx.activity.getById.refetch();
+            void ctx.profile.getUserInteractionData.refetch();
         }
     });
 

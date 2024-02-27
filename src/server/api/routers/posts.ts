@@ -8,10 +8,10 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
+import type { Post } from "@prisma/client";
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
-import type { Post } from "@prisma/client";
 
 const addUserDataToPosts = async (posts: Post[]) => {
   const userId = posts.map((post) => post.authorId);

@@ -3,6 +3,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
 import { Box, Button, CircularProgress, Snackbar, Typography } from "@mui/material";
+import { TRPCClientError } from "@trpc/client";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -49,18 +50,48 @@ export const CreatePostWizard = () => {
 
     if (!user) return null;
 
-    // TODO: merge this into one api call so we can easily make it refetch when interactions are done
-    const interactionCount = api.activity.getInteractionCount.useQuery({ userId: user.id }).data?.interactionCount ?? 0;
-    const interactionThreshold = api.profile.getNextInteractionThreshold.useQuery({ userId: user.id }).data?.threshold ?? 2;
+
+    const { interactionCount, interactionThreshold } = api.profile.getUserInteractionData.useQuery({ userId: user.id }).data ?? { interactionCount: 0, interactionThreshold: 10 };
+
     const props = {
-        value: (interactionCount / interactionThreshold) * 100
+        value: interactionThreshold === 0 ? 0 : (interactionCount / interactionThreshold) * 100
+    };
+
+    const { mutate: increaseThreshold, isLoading: increaseThesholdLoading } = api.profile.increaseTheshold.useMutation({
+        onSuccess: () => {
+            void ctx.profile.getUserInteractionData.refetch();
+        },
+    });
+
+    const { mutate: retrain, isLoading: retrainLoading } = api.model.retrainModel.useMutation({
+        onSuccess: () => {
+            handleOpenPopup('AI Retrained!');
+            void increaseThreshold({ userId: user.id });
+            void ctx.profile.getUserInteractionData.refetch();
+        },
+        onError: (e) => {
+            if (e instanceof TRPCClientError) {
+                if (e.message === "not enough interactions") {
+                    handleOpenPopup('Need more data (rate/save places you like)');
+                }
+            } else {
+                handleOpenPopup('Error retraining AI');
+            }
+        }
+    });
+
+
+    const handleRetrain = async () => {
+        // handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')
+
+        retrain({ userId: user.id, userInteractions: interactionCount, userInteractionThreshold: interactionThreshold });
     }
 
     return (
         <div className="flex w-full gap-3">
 
             <div className="flex items-center">
-                <Button onClick={() => handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')} className="h-8 w-32" variant="contained" sx={{
+                <Button onClick={() => handleRetrain()} className="h-8 w-32" variant="contained" sx={{
                     backgroundColor: '#474747', // Set the background color to white
                     '&:hover': {
                         backgroundColor: 'white', // Optional: Change background color slightly on hover
@@ -73,7 +104,7 @@ export const CreatePostWizard = () => {
 
 
             <Box sx={{ position: 'relative', display: 'inline-flex' }} onClick={() => handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')}>
-                <CircularProgress size={cirlceSize} variant="determinate" {...props} sx={{ color: 'white' }} />
+                <CircularProgress size={cirlceSize} variant="determinate" {...props} sx={{ color: props.value >= 100 ? 'green' : 'white' }} />
                 <Box
                     sx={{
                         top: 0,

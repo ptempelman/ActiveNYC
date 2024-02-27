@@ -8,9 +8,49 @@ import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 export const profileRouter = createTRPCRouter({
 
-  getNextInteractionThreshold: privateProcedure
+  getUserInteractionData: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { userId } = input;
+
+      // Fetch interaction counts
+      const likes = await ctx.prisma.like.count({
+        where: { userId: userId },
+      });
+
+      const saves = await ctx.prisma.savedActivities.count({
+        where: { A: userId },
+      });
+
+      const ratings = await ctx.prisma.rating.count({
+        where: { userId: userId },
+      });
+
+      const interactionCount = likes + saves + ratings;
+
+      // Fetch the next interaction threshold
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: userId },
+        select: { nextInteractionThreshold: true } // Only select what is necessary
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      return {
+        interactionCount: interactionCount,
+        interactionThreshold: user.nextInteractionThreshold
+      };
+    }),
+
+
+  increaseTheshold: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
       });
@@ -22,7 +62,16 @@ export const profileRouter = createTRPCRouter({
         });
       }
 
-      return { threshold: user.nextInteractionThreshold };
+      const newThreshold = user.nextInteractionThreshold + 10;
+
+      await ctx.prisma.user.update({
+        where: { id: input.userId },
+        data: {
+          nextInteractionThreshold: newThreshold,
+        },
+      });
+
+      return { newThreshold };
     }),
 
   getUserByUsername: publicProcedure

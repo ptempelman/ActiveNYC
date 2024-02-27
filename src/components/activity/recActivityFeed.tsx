@@ -12,11 +12,12 @@ export const RecActivityFeed = ({ selectedCategories, searchValue }: { selectedC
     const { isLoaded: userLoaded, isSignedIn, user } = useUser();
     const { data: activities, isLoading: activitiesLoading } = api.activity.searchActivitiesPreferNonLiked.useQuery({ userId: user?.id, searchText: searchValue, selectedCategoryIds: selectedCategories });
     const [currentIndex, setCurrentIndex] = useState(0);
-
+    const ctx = api.useContext();
 
     const { mutate: createLike, isLoading: likeLoading } = api.like.createLikeDislike.useMutation({
-        // onSuccess: () => {
-        // }
+        onSuccess: () => {
+            void ctx.profile.getUserInteractionData.refetch();
+        }
     });
 
     if (activitiesLoading)
@@ -26,7 +27,7 @@ export const RecActivityFeed = ({ selectedCategories, searchValue }: { selectedC
             </div>
         );
 
-    if (!activities || currentIndex >= activities.length) return <div className="h-12">Something went wrong (most likely the AWS Sagemaker instance is turned off to prevent costs)</div>;
+    if (!activities || currentIndex >= activities.length) return <div className="h-12">You have seen everything!</div>;
 
     const handleNextActivity = (liked: boolean) => {
 

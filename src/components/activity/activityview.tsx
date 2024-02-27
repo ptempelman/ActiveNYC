@@ -26,12 +26,14 @@ export const ActivityView = (activity: Activity) => {
     const { mutate: bookmark, isLoading: bookmarkLoading } = api.activity.bookmark.useMutation({
         onSuccess: () => {
             void ctx.activity.isBookmarked.refetch();
+            void ctx.profile.getUserInteractionData.refetch();
         }
     });
     const { mutate: unbookmark, isLoading: unbookmarkLoading } = api.activity.unbookmark.useMutation({
         onSuccess: () => {
             void ctx.activity.isBookmarked.refetch();
             void ctx.activity.getAllBookmarks.refetch()
+            void ctx.profile.getUserInteractionData.refetch();
         }
     });
 
@@ -63,7 +65,7 @@ export const ActivityView = (activity: Activity) => {
                             onClick={(e) => { e.stopPropagation() }}
                         >
                             {activity.address}
-                        </a>                        
+                        </a>
                         <div className="mb-2 text-gray-400 text-sm mr-2">
                             <p>{activity.description}</p>
                         </div>

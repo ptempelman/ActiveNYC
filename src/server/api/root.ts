@@ -1,10 +1,11 @@
 import { createTRPCRouter } from "~/server/api/trpc";
+import { activityRouter } from "./routers/activity";
+import { likeRouter } from "./routers/like";
 import { postsRouter } from "./routers/posts";
 import { profileRouter } from "./routers/profile";
-import { signinRouter } from "./routers/signin";
-import { activityRouter } from "./routers/activity";
 import { ratingRouter } from "./routers/rating";
-import { likeRouter } from "./routers/like";
+import { signinRouter } from "./routers/signin";
+import { modelRouter } from "./routers/model";
 
 /**
  * This is the primary router for your server.
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   activity: activityRouter,
   rating: ratingRouter,
   like: likeRouter,
+  model: modelRouter,
 });
 
 // export type definition of API
