@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
+import { signRequest } from "~/server/helpers/awsSignRequests";
 
 export const activityRouter = createTRPCRouter({
 
@@ -178,11 +179,11 @@ export const activityRouter = createTRPCRouter({
                 activityIds: activities.map(activity => activity.id),
             };
 
-            const url = process.env.ML_API_ENDPOINT + "/predict";
+            const url = `${process.env.AWS_API_ENDPOINT}/predict`;
+            console.log("Full URL:", url);
             if (!url) {
-                throw new Error("ML_API_ENDPOINT not found");
+                throw new Error("AWS_API_ENDPOINT not found");
             }
-            const payload = JSON.stringify(data);
 
             interface ResultType {
                 [key: string]: number;
@@ -190,14 +191,18 @@ export const activityRouter = createTRPCRouter({
 
             let result: ResultType | null = null;
 
+            // const payload = JSON.stringify(data);
+            const payload = data;
+
             try {
-                const response = await fetch(url, {
-                    method: 'POST', // Using POST as per the adjusted FastAPI endpoint
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: payload,
-                });
+                // const response = await fetch(url, {
+                //     method: 'POST', // Using POST as per the adjusted FastAPI endpoint
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: payload,
+                // });
+                const response = await signRequest('POST', url, payload);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -209,6 +214,50 @@ export const activityRouter = createTRPCRouter({
                 console.error("Error calling FastAPI endpoint:", error);
                 throw new Error('Error calling FastAPI endpoint:');
             }
+
+            // // Configure AWS SDK
+            // AWS.config.update({
+            //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            //     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            //     region: 'us-east-1', // e.g., 'us-east-1'
+            // });
+
+            // const lambda = new AWS.Lambda();
+
+            // const data = {
+            //     userId: userId,
+            //     activityIds: activities.map(activity => activity.id),
+            // };
+
+            // const FunctionName = process.env.AWS_LAMBDA_FUNCTION_NAME; // Your Lambda function name
+            // if (!FunctionName) {
+            //     throw new Error("AWS_LAMBDA_FUNCTION_NAME not found");
+            // }
+
+            // const params = {
+            //     FunctionName,
+            //     InvocationType: 'RequestResponse',
+            //     Payload: JSON.stringify(data),
+            // };
+
+            // interface ResultType {
+            //     [key: string]: number;
+            // }
+
+            // let result: ResultType | null = null;
+
+            // try {
+            //     const lambdaResponse = await lambda.invoke(params).promise();
+            //     const payload = JSON.parse(lambdaResponse.Payload as string);
+
+            //     result = payload as ResultType;
+            // } catch (error) {
+            //     console.error("Error invoking Lambda function:", error);
+            //     throw new Error('Error calling Lambda function:');
+            // }
+
+            console.log(result)
+
 
             type ActivityWithScore = {
                 activity: typeof activities[0],
