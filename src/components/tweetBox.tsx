@@ -80,18 +80,11 @@ export const CreatePostWizard = () => {
         }
     });
 
-
-    const handleRetrain = async () => {
-        // handleOpenPopup('To retrain your AI, give it useful data by rating, liking and saving')
-
-        retrain({ userId: user.id, userInteractions: interactionCount, userInteractionThreshold: interactionThreshold });
-    }
-
     return (
         <div className="flex w-full gap-3">
 
             <div className="flex items-center">
-                <Button onClick={() => handleRetrain()} className="h-8 w-32" variant="contained" sx={{
+                <Button onClick={() => retrain({ userId: user.id, userInteractions: interactionCount, userInteractionThreshold: interactionThreshold })} className="h-8 w-32" variant="contained" sx={{
                     backgroundColor: '#474747', // Set the background color to white
                     '&:hover': {
                         backgroundColor: 'white', // Optional: Change background color slightly on hover
