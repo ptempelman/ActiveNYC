@@ -1,7 +1,7 @@
 
 import { AwsClient } from 'aws4fetch';
 
-export const runtime = 'experimental-edge'
+import * as crypto from 'crypto';
 
 export async function signRequest(method: string, url: string, body?: any): Promise<Response> {
 
