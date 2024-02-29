@@ -1,6 +1,8 @@
 
 import { AwsClient } from 'aws4fetch';
 
+export const runtime = 'experimental-edge'
+
 export async function signRequest(method: string, url: string, body?: any): Promise<Response> {
 
     const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
