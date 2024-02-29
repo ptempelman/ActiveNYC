@@ -1,42 +1,28 @@
-import { Sha256 } from "@aws-crypto/sha256-browser";
-import { defaultProvider } from "@aws-sdk/credential-provider-node"; // For Node.js applications
-import { HttpRequest } from "@aws-sdk/protocol-http";
-import { SignatureV4 } from "@aws-sdk/signature-v4";
-import { formatUrl } from "@aws-sdk/util-format-url";
 
-// Function to sign requests
-export async function signRequest(
-    method: string, // HTTP method as a string
-    url: string, // URL as a string
-    body?: any // Optional body, typed as any for flexibility, use a specific type as needed
-): Promise<Response> {
-    const credentials = await defaultProvider()();
-    console.log("Credentials from signRequest:", credentials)
-    const endpoint = new URL(url);
+import { AwsClient } from 'aws4fetch';
 
-    const request = new HttpRequest({
-        method,
-        protocol: endpoint.protocol,
-        hostname: endpoint.hostname,
-        path: endpoint.pathname,
-        headers: {
-            'Content-Type': 'application/json',
-        },
+export async function signRequest(method: string, url: string, body?: any): Promise<Response> {
+
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    if (!accessKeyId || !secretAccessKey) {
+        throw new Error("AWS credentials not found");
+    }
+
+    const aws = new AwsClient({
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+    });
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    const response = await aws.fetch(url, {
+        method: method,
+        headers: body ? headers : {},
         body: body ? JSON.stringify(body) : undefined,
     });
 
-    const signer = new SignatureV4({
-        credentials,
-        region: 'us-east-1', // Your AWS region
-        service: 'execute-api', // For API Gateway
-        sha256: Sha256,
-    });
-
-    const signedRequest = await signer.sign(request);
-
-    return fetch(formatUrl(signedRequest), {
-        method,
-        headers: signedRequest.headers,
-        body: request.body,
-    });
+    return response;
 }

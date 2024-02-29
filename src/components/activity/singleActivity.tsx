@@ -27,7 +27,8 @@ export const SingleActivity = ({ activityId }: { activityId: string }) => {
             mapRef.current.panTo({ lat, lng });
         }
     };
-    const [mapCenter, setMapCenter] = useState({ lat: 40.72889197585025, lng: -73.99479733097367 });
+
+    // const [mapCenter, setMapCenter] = useState({ lat: data?.latitude ?? 40.72889197585025, lng: data?.longitude ?? -73.99479733097367 });
 
     if (postsLoading)
         return (
@@ -54,8 +55,8 @@ export const SingleActivity = ({ activityId }: { activityId: string }) => {
                     <GoogleMap
                         mapContainerStyle={containerStyle}
 
-                        center={mapCenter}
-                        zoom={13}
+                        center={{ lat: data.latitude, lng: data.longitude }}
+                        zoom={14}
                         onLoad={map => {
                             mapRef.current = map;
                         }}

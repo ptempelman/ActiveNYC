@@ -33,6 +33,7 @@
     "@upstash/ratelimit": "^0.4.4",
     "@upstash/redis": "^1.27.1",
     "aws-sdk": "^2.1567.0",
+    "aws4fetch": "^1.0.17",
     "axios": "^1.6.5",
     "dayjs": "^1.11.7",
     "next": "^13.2.1",

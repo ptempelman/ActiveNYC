@@ -65,7 +65,7 @@ export const CreatePostWizard = () => {
 
     const { mutate: retrain, isLoading: retrainLoading } = api.model.retrainModel.useMutation({
         onSuccess: () => {
-            handleOpenPopup('AI Retrained!');
+            handleOpenPopup('AI Retrained! Note: it might take a few seconds for changes to take effect');
             void increaseThreshold({ userId: user.id });
             void ctx.profile.getUserInteractionData.refetch();
         },
